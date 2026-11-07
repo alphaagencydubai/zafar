@@ -698,3 +698,4 @@ body { font-weight: 400; letter-spacing: 0; text-rendering: optimizeLegibility; 
 .st-foot { padding-inline-end: 64px; }
 .r-n { font: 200 40px/1 var(--body); letter-spacing: .02em; }
 .sc-n { font: 400 13px/1 var(--body); letter-spacing: .12em; opacity: .9; }
+.boot-word { direction: ltr; unicode-bidi: isolate; }

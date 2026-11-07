@@ -3,6 +3,25 @@
 import { esc, fa, n, m, T, pct, date, dateY, dshort, time, dt, ago, until, sum, kpi, delta, card, pill, empty, btn, meter, avatar, table, lines, hbars, vbars, startOfDay, DAY, csv } from "./kit.js";
 import { $, db, guest, member, staff, honorFa, TIER, CAT, METHOD, balance, commit, drawer, modal, toast, opt, field, money } from "./ui.js";
 import { mark } from "../brand.js";
+import { TIERS, SITUATIONS, CAT_SIT, allows } from "../cards.js";
+
+// what the card allows for a charge: null when fine, otherwise the reason (Persian, for the host)
+const noteFa = (v) => (v && typeof v === "object" ? v.fa : "");
+export function chargeRule(x, cat, amount, by) {
+  const R = TIERS[x.tier], sit = SITUATIONS.find((s) => s.id === CAT_SIT[cat]);
+  if (sit && !allows(x.tier, sit.id)) return `«${sit.t.fa}» روی کارت ${TIER[x.tier]} نمی‌نشیند؛ پرداخت حضوری بگیرید`;
+  if (R.perCharge && amount > R.perCharge) return `سقف هر امضا برای کارت ${TIER[x.tier]} ${m(R.perCharge)} تومان است`;
+  if (x.tier === "teal" && cat === "gift" && amount > 20e6) return "هدیه روی کارت فیروزه تا ۲۰ میلیون تومان است";
+  if (x.tier === "gold" && cat === "event" && amount > 250e6) return "مراسم روی کارت طلایی تا ۸۰ مهمان و سقف هر امضاست";
+  const s = x.supp.find((c) => c.name === by);
+  if (s) { const b = balance(x.id); const used = sum(b.cur.filter((t) => t.by === s.name), (t) => t.amount); if (used + amount > s.limit) return `سقف کارت همراه ${s.name} ${m(s.limit)} تومان است (مصرف این دوره: ${m(used)})`; }
+  return null;
+}
+export function ruleHint(x, cat) {
+  const R = TIERS[x.tier], sit = SITUATIONS.find((s) => s.id === CAT_SIT[cat]); const v = sit ? sit.v[x.tier] : true;
+  const a = v === false ? `<b class="neg">روی این کارت نیست</b>` : `<b class="pos">روی کارت می‌نشیند${noteFa(v) ? ` · ${noteFa(v)}` : ""}</b>`;
+  return `کارت ${TIER[x.tier]}: ${a} · سقف هر امضا ${R.perCharge ? m(R.perCharge) + " تومان" : "ندارد"} · سقف حساب ${R.limit ? m(R.limit) + " تومان" : "ندارد"}`;
+}
 
 const status = (x, b) => { const over = Date.now() > b.due && b.bal > 0; const near = x.limit && b.bal / x.limit > 0.8; return over ? pill("سررسید گذشته", "red") : near ? pill("نزدیک سقف", "gold") : x.card.status === "frozen" ? pill("مسدود", "red") : pill("خوب", "green"); };
 
@@ -38,9 +57,9 @@ document.addEventListener("click", (e) => {
 export function postCharge(mid, pre = {}) {
   const d = db();
   modal("ثبت امضا سر میز", `${field("حساب", `<select name="m">${opt(d.members.map((x) => [x.id, `${honorFa(guest(x.guestId))} · ${x.id}`]), mid)}</select>`)}<div class="ff2">${field("خدمت", `<select name="c">${opt(Object.entries(CAT).filter(([k]) => k !== "settle"), pre.cat || "dining")}</select>`)}${field("مبلغ (تومان)", `<input name="a" dir="ltr" inputmode="numeric" value="${pre.amount || ""}" required>`)}</div>${field("شرح", `<input name="n" value="${esc(pre.note || "شام · سالن آینه")}">`)}${field("امضاکننده", `<select name="by" data-byfor></select>`)}`, {
-    ok: "ثبت امضا", onOk: (f) => { const a = money(f.a.value); if (!a) return false; const x = member(f.m.value), b = balance(x.id); if (x.limit && b.bal + a > x.limit) { toast("بیش از سقف حساب است؛ با مدیر هماهنگ کنید"); return false; } if (x.card.status === "frozen") { toast("کارت مسدود است"); return false; } d.tx.unshift({ id: `T-${d.tx.length + 1}`, memberId: x.id, ts: Date.now(), kind: "charge", cat: f.c.value, amount: a, note: f.n.value, by: f.by.value }); commit("M-1", `امضای ${m(a)} تومان برای ${guest(x.guestId).name}`); toast("امضا ثبت شد؛ روی صفحه‌ی NFC عضو هم آمد"); },
+    ok: "ثبت امضا", onOk: (f) => { const a = money(f.a.value); if (!a) return false; const x = member(f.m.value), b = balance(x.id); if (x.limit && b.bal + a > x.limit) { toast("بیش از سقف حساب است؛ با مدیر هماهنگ کنید"); return false; } if (x.card.status === "frozen") { toast("کارت مسدود است"); return false; } const why = chargeRule(x, f.c.value, a, f.by.value); if (why) { toast(why); const h = document.querySelector("#rulehint"); if (h) { h.classList.add("bad"); h.innerHTML = why; } return false; } d.tx.unshift({ id: `T-${d.tx.length + 1}`, memberId: x.id, ts: Date.now(), kind: "charge", cat: f.c.value, amount: a, note: f.n.value, by: f.by.value }); commit("M-1", `امضای ${m(a)} تومان برای ${guest(x.guestId).name}`); toast("امضا ثبت شد؛ روی صفحه‌ی NFC عضو هم آمد"); },
   });
-  const fm = document.querySelector("#modal form"); const fill = () => { const x = member(fm.m.value); fm.by.innerHTML = opt([[x.id, "خود عضو"], ...x.supp.map((s) => [s.name, `${s.name} (کارت همراه)`])]); }; fm.m.onchange = fill; fill();
+  const fm = document.querySelector("#modal form"); fm.insertAdjacentHTML("beforeend", `<p class="hint" id="rulehint"></p>`); const hint = () => { const h = fm.querySelector("#rulehint"); h.classList.remove("bad"); h.innerHTML = ruleHint(member(fm.m.value), fm.c.value); }; const fill = () => { const x = member(fm.m.value); fm.by.innerHTML = opt([[x.id, "خود عضو"], ...x.supp.map((s) => [s.name, `${s.name} (کارت همراه)`])]); hint(); }; fm.m.onchange = fill; fm.c.onchange = hint; fill();
 }
 export function settle(mid) {
   const x = member(mid), b = balance(mid), g = guest(x.guestId);
@@ -49,14 +68,25 @@ export function settle(mid) {
   });
 }
 
+function rulesTable() {
+  const mk = (v) => (v === true ? `<span class="pos">✓</span>` : v === false ? `<span class="muted">—</span>` : `<span class="pos">✓</span> <small>${esc(v.fa)}</small>`);
+  const R = (k, f) => ["teal", "gold", "noir"].map((t) => f(TIERS[t]));
+  return `<div class="tbl-wrap"><table class="tbl compact"><thead><tr><th>کاربرد</th><th>فیروزه</th><th>طلایی</th><th>نوآر</th></tr></thead><tbody>
+    ${SITUATIONS.map((s) => `<tr><td>${esc(s.t.fa)}</td>${["teal", "gold", "noir"].map((t) => `<td>${mk(s.v[t])}</td>`).join("")}</tr>`).join("")}
+    <tr><td><b>سقف حساب</b></td>${R("l", (x) => `<td>${x.limit ? T(x.limit) : "بدون سقف"}</td>`).join("")}</tr>
+    <tr><td><b>سقف هر امضا</b></td>${R("p", (x) => `<td>${x.perCharge ? T(x.perCharge) : "بدون سقف"}</td>`).join("")}</tr>
+    <tr><td><b>کارت همراه</b></td>${R("c", (x) => `<td>${x.companions == null ? "بدون سقف" : fa(x.companions)}</td>`).join("")}</tr>
+  </tbody></table></div>`;
+}
 function post(el) {
   const d = db(); const recent = d.tx.slice(0, 30);
   el.innerHTML = `<div class="grid g-2">
-    ${card("امضا سر میز", `<p class="muted">مهمان به‌جای پرداخت، صورت‌حساب را امضا می‌کند. مبلغ روی حساب ظفر و صفحه‌ی NFC او می‌نشیند.</p><div class="row">${btn("ثبت امضا", 'data-p="1"', "gold")}</div>`)}
-    ${card("تسویه‌ی ماهانه", `<p class="muted">در پایان هر دوره، میزبان شخصی عضو مانده را رودررو (نقد، کارتخوان یا حواله) تسویه می‌کند.</p><div class="row">${btn("ثبت تسویه", 'data-s="1"', "gold")}</div>`)}
+    ${card("امضا سر میز", `<p class="muted">مهمان به‌جای پرداخت، صورت‌حساب را امضا می‌کند. مبلغ روی حساب ظفر و صفحه‌ی NFC او می‌نشیند.</p><div class="row">${btn("ثبت امضا", 'data-post-new="1"', "gold")}</div>`)}
+    ${card("تسویه‌ی ماهانه", `<p class="muted">در پایان هر دوره، میزبان شخصی عضو مانده را رودررو (نقد، کارتخوان یا حواله) تسویه می‌کند.</p><div class="row">${btn("ثبت تسویه", 'data-settle-new="1"', "gold")}</div>`)}
   </div>
+  ${card("قواعد کارت‌ها · کاربرد هر کارت", rulesTable(), { extra: `<span class="muted">ثبت امضا این قواعد را خودکار کنترل می‌کند</span>` })}
   ${card("آخرین ثبت‌ها", table(["زمان", "عضو", "نوع", "شرح", "مبلغ"], recent.map((t) => { const g = guest(member(t.memberId).guestId); return [{ v: dt(t.ts), s: t.ts }, `<a href="#/accounts/${t.memberId}">${esc(honorFa(g))}</a>`, t.kind === "settle" ? pill("تسویه · " + METHOD[t.method], "green") : pill(CAT[t.cat], "mute"), esc(t.note), { v: T(t.amount), s: t.amount }]; })))}`;
-  el.onclick = (e) => { if (e.target.closest("[data-p]")) postCharge(d.members[0].id); if (e.target.closest("[data-s]")) modal("تسویه", field("حساب", `<select name="m">${opt(d.members.map((x) => [x.id, `${honorFa(guest(x.guestId))} · ${m(balance(x.id).bal)}`]))}</select>`), { ok: "ادامه", onOk: (f) => setTimeout(() => settle(f.m.value), 320) }); };
+  el.onclick = (e) => { if (e.target.closest("[data-post-new]")) postCharge(d.members[0].id); if (e.target.closest("[data-settle-new]")) modal("تسویه", field("حساب", `<select name="m">${opt(d.members.map((x) => [x.id, `${honorFa(guest(x.guestId))} · ${m(balance(x.id).bal)}`]))}</select>`), { ok: "ادامه", onOk: (f) => setTimeout(() => settle(f.m.value), 320) }); };
 }
 
 // statements — printed on Zafar letterhead, sealed, hand-delivered

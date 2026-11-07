@@ -313,3 +313,5 @@ select option { background: var(--panel); color: var(--tx); }
   .alerts-pop { inset-inline: 12px; width: auto; }
 }
 @media print { .side, .top, .bar-row, .b, .toast { display: none !important; } .main { margin: 0; } body { background: #fff; color: #000; } .card { box-shadow: none; } }
+
+#rulehint b.pos { color: var(--ok, #4E9C79); } #rulehint b.neg, .hint.bad { color: #C9634A; }

@@ -6,9 +6,17 @@ Alpha Agency built this preview for Zafar Continental, a restaurant in Tabriz (I
 - Zafar Circle member page (opened by tapping the NFC card): `member.html`, with demo cards for ZC-1001, a Gold member and a Teal member
 - CEO panel (پنل مدیرعامل): `admin.html`, demo PIN `1234`
 
+## Pages
+Each page is its own route (hash routes, so it runs on GitHub Pages), with a cross-fade between pages:
+`#/` home · `#/menu` (and `#/menu/breakfast`, `#/menu/cafe`) · `#/services` · `#/services/<id>` for each of the 13 services (plus `#/services/visit`) · `#/circle` · `#/account` · `#/occasions` · `#/visit` · `#/login`.
+- Every service page has an intro, what is included, good to know, lead time, party size, where, payment, which Zafar Account cards can carry it, related services and previous/next. The chauffeur page includes the route widget.
+- The Account page shows the card for each tier (Teal, Gold, Noir) and where it works: account limit, limit per signature, companion cards, settlement, and 11 usage situations, plus a comparison table. The rules live in `js/cards.js`; the member page shows the member's own card rules, and the CEO panel enforces them when a signature is posted.
+- `#/login` is the private door: a PIN pad for Zafar's team (opens the CEO panel) and the NFC tap for Circle members.
+- Links from the old one-page site (`#menu`, `#chauffeur` …) still land on the right page.
+
 ## What is in it
 - Hero: Zafar's own video inside an arch frame (the arches in their dining room), with an ambient blurred copy behind it. On phones the video fills the screen.
-- Glass navigation (iOS style). On desktop it is a top capsule; on phones it is a thumb bar. A lens slides to the current section, and the bar folds as you scroll down and opens as you scroll up.
+- Glass navigation (iOS style). On desktop it is a top capsule; on phones it is a thumb bar. Six tabs (Home, Menu, Services, Circle, Account, Visit) plus the letter button and a lock for sign-in. A lens sits under the current page, and the bar folds as you scroll down and opens as you scroll up.
 - The menu is Zafar's real Continental menu from منو.net/zafar (Restaurant, Breakfast, Café; 178 items; prices in thousand toman).
 - The ideas they chose from Alpha's idea book:
   - 5: letters instead of forms

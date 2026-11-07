@@ -6,6 +6,7 @@ import { get, on, save, setMe, addRequest, DAY } from "./data.js";
 import { initLetter, openLetter } from "./letter.js";
 import { STATUS, SVC } from "./services.js";
 import { dateInput, readDate } from "./jalali.js";
+import { SITUATIONS, TIERS, RULES, CYCLE } from "./cards.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -50,6 +51,10 @@ const D = {
   saveP: { fa: "ذخیره برای میزبان", tr: "Ev sahibim için kaydet", en: "Save for my host" }, saved: { fa: "میزبانتان در جریان قرار گرفت.", tr: "Ev sahibinize iletildi.", en: "Your host has been told." },
   back: { fa: "بازگشت به سایت ظفر", tr: "Zafar'a dön", en: "Back to Zafar" },
   other: { fa: "کارت دیگری دارید؟", tr: "Başka bir kart mı?", en: "Another card?" },
+  uses: { fa: "کارت {tier} شما کجا کار می‌کند", tr: "{tier} kartınız nerelerde geçer", en: "Where your {tier} card works" },
+  usesP: { fa: "هر چیزی که اینجا تیک ندارد، همچنان با پرداخت حضوری در اختیار شماست.", tr: "Burada işaretli olmayan her şey yüz yüze ödemeyle yine sizindir.", en: "Anything without a tick is still yours, paid in person." },
+  usesAll: { fa: "مقایسه‌ی هر سه کارت", tr: "Üç kartı karşılaştırın", en: "Compare all three cards" },
+  inperson: { fa: "حضوری", tr: "yüz yüze", en: "in person" },
   cats: { dining: { fa: "پذیرایی", tr: "Yemek", en: "Dining" }, home: { fa: "سرو در منزل", tr: "Evde servis", en: "Home serving" }, chauffeur: { fa: "راننده", tr: "Şoför", en: "Driver" }, gift: { fa: "هدیه", tr: "Hediye", en: "Gift" }, event: { fa: "مراسم", tr: "Tören", en: "Ceremony" }, bespoke: { fa: "غذای اختصاصی", tr: "Özel yemek", en: "Bespoke dish" }, settle: { fa: "تسویه", tr: "Ödeme", en: "Settlement" } },
   method: { pos: { fa: "کارتخوان", tr: "POS", en: "card" }, cash: { fa: "نقد", tr: "nakit", en: "cash" }, transfer: { fa: "حواله", tr: "havale", en: "transfer" } },
 };
@@ -141,6 +146,12 @@ function render() {
     <div class="ac-tabs seg seg-dark" role="tablist"><span class="seg-lens"></span><button type="button" data-tab="now" aria-selected="${tab === "now"}">${esc(tm("now"))}</button><button type="button" data-tab="past" aria-selected="${tab === "past"}">${esc(tm("past"))}</button></div>
     ${tab === "now" ? (cur.length ? `<ul class="txs">${cur.map(row).join("")}</ul>` : `<p class="muted">${esc(tm("empty"))}</p>`) : `<ul class="stmts">${past.map((p) => `<li><details><summary><span>${esc(fdate(p.s.ts, { month: "long", year: "numeric" }))}</span><small>${digits(p.items.length)} · ${esc(pick(D.method[p.s.method] || D.method.pos))}</small><b>${esc(mtoman(p.total))}</b></summary><ul class="txs">${p.items.map(row).join("")}</ul></details></li>`).join("")}</ul>`}
     <div class="ac-foot"><span class="safe">${esc(tm("never"))}</span><button class="btn ghost" type="button" id="print">${esc(tm("print"))}</button></div>
+  </section>
+  <section class="mbox uses">
+    <div class="us-h"><h3>${esc(tm("uses", { tier: t("tier." + m.tier) }))}</h3><a class="us-l" href="index.html#/account">${esc(tm("usesAll"))}</a></div>
+    <dl class="us-rules">${RULES.map((r) => { const T = TIERS[m.tier]; const v = r.k === "limit" ? (T.limit ? mtoman(T.limit) : tm("nolimit")) : r.k === "perCharge" ? (T.perCharge ? mtoman(T.perCharge) : t("acc.free")) : r.k === "companions" ? (T.companions == null ? t("acc.free") : digits(T.companions)) : pick(CYCLE[T.cycle]); return `<div><dt>${esc(pick(r.t))}</dt><dd>${esc(v)}</dd></div>`; }).join("")}</dl>
+    <ul class="us-list">${SITUATIONS.map((x) => { const v = x.v[m.tier]; return `<li class="${v === false ? "off" : ""}"><i class="us-m">${v === false ? "–" : "✓"}</i><span><b>${esc(pick(x.t))}</b>${v && v !== true ? `<small>${esc(pick(v))}</small>` : v === false ? `<small>${esc(tm("inperson"))}</small>` : ""}</span></li>`; }).join("")}</ul>
+    <p class="muted">${esc(tm("usesP"))}</p>
   </section>
   <div class="mgrid2">
     <section class="mbox supp"><h3>${esc(tm("supp"))}</h3>${m.supp.length ? `<ul class="sl">${m.supp.map((s) => `<li><div class="mini-card tier-${m.tier}">${mark()}</div><div><b>${esc(s.name)}</b><small>${esc(s.rel)} · ${esc(tm("limit"))}: ${esc(mtoman(s.limit))}</small></div></li>`).join("")}</ul>` : `<p class="muted">${esc(tm("suppNone"))}</p>`}<button class="btn ghost" type="button" id="supp-add">${esc(tm("suppAdd"))}</button></section>

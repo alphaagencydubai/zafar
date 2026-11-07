@@ -31,7 +31,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) play
 // ———————————————————————— languages
 function paintLangs() {
   $$(".langs").forEach((box) => {
-    box.innerHTML = LANGS.map(([l, n]) => `<button type="button" data-l="${l}" aria-pressed="${getLang() === l}" lang="${l === "az" ? "az-Latn" : l}">${n}</button>`).join("");
+    box.innerHTML = LANGS.map(([l, n]) => `<button type="button" data-l="${l}" aria-pressed="${getLang() === l}" lang="${l}">${n}</button>`).join("");
   });
 }
 document.addEventListener("click", (e) => { const b = e.target.closest(".langs button"); if (b) setLang(b.dataset.l); });
@@ -39,7 +39,7 @@ document.addEventListener("click", (e) => { const b = e.target.closest(".langs b
 // ———————————————————————— hero
 function paintHero() {
   $(".ht-fa").textContent = getLang() === "fa" ? "ظفر" : "Zafar";
-  $(".ht-lat").innerHTML = getLang() === "fa" ? "Zafar <em>Continental</em>" : `<em>Continental</em> · <span class="ht-f">ظفر</span>`;
+  $(".ht-lat").innerHTML = getLang() === "fa" ? `<span lang="en">Zafar <em>Continental</em></span>` : `<em lang="en">Continental</em> · <span class="ht-f">ظفر</span>`;
   const g = me();
   const el = $("#greet");
   if (g && g.name) { el.hidden = false; el.textContent = t(g.seen && Date.now() - g.seen > 6e4 ? "hero.back" : "hero.welcome", { name: honor(g) }); requestAnimationFrame(() => el.classList.add("in")); }
@@ -58,8 +58,8 @@ function seg(el, items, cur, onPick) {
   el.innerHTML = `<span class="seg-lens"></span>` + items.map(([v, l]) => `<button type="button" role="tab" data-v="${v}" aria-selected="${v === cur}">${esc(l)}</button>`).join("");
   const place = () => { const b = el.querySelector('[aria-selected="true"]'); if (!b) return; el.style.setProperty("--x", `${b.offsetLeft}px`); el.style.setProperty("--w", `${b.offsetWidth}px`); };
   el.onclick = (e) => { const b = e.target.closest("button[data-v]"); if (!b) return; el.querySelectorAll("button").forEach((x) => x.setAttribute("aria-selected", x === b)); place(); onPick(b.dataset.v); };
-  requestAnimationFrame(place); document.fonts?.ready?.then(place);
-  new ResizeObserver(place).observe(el);
+  requestAnimationFrame(place); document.fonts?.ready?.then(place); setTimeout(place, 400);
+  const ro = new ResizeObserver(place); ro.observe(el); el.querySelectorAll("button").forEach((b) => ro.observe(b));
 }
 
 // ———————————————————————— menu
@@ -67,16 +67,16 @@ let menuId = "restaurant", catId = null, query = "";
 function itemPrice(it) { const o = get().menu[it.id]; return o && o.p ? o.p : it.p; }
 function hidden(it) { const o = get().menu[it.id]; return o && o.off; }
 const L = () => getLang();
-const nm = (o) => (L() === "fa" ? o.fa : L() === "az" ? o.az : o.en);
+const nm = (o) => (L() === "fa" ? o.fa : L() === "tr" ? o.tr : o.en);
 function paintMenu() {
-  seg($("#menu-tabs"), MENU.map((m) => [m.id, L() === "fa" ? m.fa : L() === "az" ? m.az : m.en]), menuId, (v) => { menuId = v; catId = null; drawMenu(); scrollMenuTop(); });
+  seg($("#menu-tabs"), MENU.map((m) => [m.id, L() === "fa" ? m.fa : L() === "tr" ? m.tr : m.en]), menuId, (v) => { menuId = v; catId = null; drawMenu(); scrollMenuTop(); });
   drawMenu();
 }
 function scrollMenuTop() { const y = $("#menu-cats").getBoundingClientRect().top + scrollY - (innerWidth < 900 ? 200 : 170); if (scrollY > y + 10) scrollTo({ top: y, behavior: "smooth" }); }
 function match(it) {
   if (!query) return true;
   const s = query.toLowerCase();
-  const hay = [it.fa, it.en, it.az, it.d?.fa, it.d?.en, it.d?.az, ...(it.opts || []).flatMap((o) => [o.fa, o.en, o.az])].join(" ").toLowerCase();
+  const hay = [it.fa, it.en, it.tr, it.d?.fa, it.d?.en, it.d?.tr, ...(it.opts || []).flatMap((o) => [o.fa, o.en, o.tr])].join(" ").toLowerCase();
   return hay.includes(s);
 }
 function drawMenu() {
@@ -115,7 +115,7 @@ function paintServices() {
     return `<div class="sg"><div class="sg-h reveal"><h3>${esc(t("grp." + g))}</h3></div><div class="sg-grid">${list.map((s, i) => `
       <button class="sc ${sizes[i] || ""} reveal" type="button" data-letter="${s.id}" style="transition-delay:${i * 0.07}s">
         <span class="sc-img"><img src="assets/img/${s.img}.webp" alt="" loading="lazy"></span>
-        <span class="sc-n">${["I", "II", "III", "IV", "V", "VI"][i]}</span>
+        <span class="sc-n">${digits(String(i + 1).padStart(2, "0"))}</span>
         <span class="sc-body"><h4>${esc(pick(s.t))}</h4><p>${esc(pick(s.s))}</p>${s.d && sizes[i] === "feat" ? `<p style="margin-top:8px">${esc(pick(s.d))}</p>` : ""}<span class="sc-go">${esc(t("svc.req"))}<i></i></span></span>
       </button>`).join("")}</div></div>`;
   }).join("");
@@ -175,11 +175,11 @@ function paintAccount() {
   $("#acc-feats").innerHTML = F.map(([a, b]) => `<div class="af"><b>${esc(t(a))}</b><p>${esc(t(b))}</p></div>`).join("");
   const day = 864e5, now = Date.now();
   const rows = [
-    [now - 2 * day, { fa: "شام · سالن آینه · ۴ نفر", az: "Şam yeməyi · Güzgü zalı · 4 nəfər", en: "Dinner · Mirror salon · 4 guests" }, 18.4e6],
-    [now - 5 * day, { fa: "راننده · فرودگاه تا ظفر", az: "Sürücü · Hava limanından Zafara", en: "Driver · Airport to Zafar" }, 3.6e6],
-    [now - 9 * day, { fa: "سرو در منزل · ۱۴ نفر", az: "Evdə xidmət · 14 nəfər", en: "Home serving · 14 guests" }, 96e6],
-    [now - 12 * day, { fa: "جعبه‌ی هدیه · تحویل دستی", az: "Hədiyyə qutusu · əl ilə", en: "Gift box · hand-delivered" }, 14.5e6],
-    [now - 16 * day, { fa: "صبحانه‌ی خانوادگی", az: "Ailə səhər yeməyi", en: "Family breakfast" }, 7.9e6],
+    [now - 2 * day, { fa: "شام · سالن آینه · ۴ نفر", tr: "Akşam yemeği · Aynalı salon · 4 kişi", en: "Dinner · Mirror salon · 4 guests" }, 18.4e6],
+    [now - 5 * day, { fa: "راننده · فرودگاه تا ظفر", tr: "Şoför · Havalimanından Zafar'a", en: "Driver · Airport to Zafar" }, 3.6e6],
+    [now - 9 * day, { fa: "سرو در منزل · ۱۴ نفر", tr: "Evde servis · 14 kişi", en: "Home serving · 14 guests" }, 96e6],
+    [now - 12 * day, { fa: "جعبه‌ی هدیه · تحویل دستی", tr: "Hediye kutusu · elden", en: "Gift box · hand-delivered" }, 14.5e6],
+    [now - 16 * day, { fa: "صبحانه‌ی خانوادگی", tr: "Aile kahvaltısı", en: "Family breakfast" }, 7.9e6],
   ];
   const total = rows.reduce((s, r) => s + r[2], 0);
   $("#stmt").innerHTML = `<div class="st-h">${mark()}<b>ZAFAR ACCOUNT</b><span>${esc(t("acc.stmt"))}</span></div>
@@ -221,7 +221,8 @@ let tT; export function toast(m) { const el = $("#toast"); el.textContent = m; e
 
 // ———————————————————————— paint everything
 function all() {
-  paint(); paintLangs(); paintHero(); paintMenu(); paintServices(); paintCar(); paintCircle(); paintAccount(); paintOcc();
+  paint(); paintLangs(); paintHero();
+  $$(".r-n").forEach((e, i) => { e.textContent = digits(String(i + 1).padStart(2, "0")); }); paintMenu(); paintServices(); paintCar(); paintCircle(); paintAccount(); paintOcc();
   observe(); relens();
   document.title = getLang() === "fa" ? "ظفر · رستوران قاره‌ای تبریز" : "Zafar Continental · Tabriz";
 }

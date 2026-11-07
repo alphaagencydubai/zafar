@@ -10,8 +10,8 @@ const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const SUBJECTS = ["visit", "home", "chef", "delivery", "protocol", "ceremony", "proposal", "birthday", "business", "buyout", "giftbox", "evening", "chauffeur", "bespoke", "circle"];
 const TPL = {
-  intro: { fa: "من {title} {name} هستم و درباره‌ی «{svc}» برایتان می‌نویسم.", az: "Mən {title} {name}. Sizə «{svc}» barədə yazıram.", en: "I am {title} {name}, and I am writing to you about “{svc}”." },
-  call: { fa: "لطفاً با شماره‌ی {phone} تماس بگیرید؛ بهترین زمان تماس، {ct} است.", az: "Zəhmət olmasa {phone} nömrəsinə zəng edin; mənə ən rahat vaxt — {ct}.", en: "Please call me on {phone}; the best time to reach me is {ct}." },
+  intro: { fa: "من {title} {name} هستم و درباره‌ی «{svc}» برایتان می‌نویسم.", tr: "Ben {title} {name}; size “{svc}” hakkında yazıyorum.", en: "I am {title} {name}, and I am writing to you about “{svc}”." },
+  call: { fa: "لطفاً با شماره‌ی {phone} تماس بگیرید؛ بهترین زمان تماس، {ct} است.", tr: "Lütfen beni {phone} numarasından arayın; bana ulaşmak için en uygun zaman: {ct}.", en: "Please call me on {phone}; the best time to reach me is {ct}." },
 };
 const CT = ["ct.morning", "ct.noon", "ct.afternoon", "ct.evening"];
 const HEARD = ["heard.friend", "heard.ig", "heard.visit", "heard.hotel", "heard.other"];
@@ -132,7 +132,7 @@ function send() {
   const today = h < slot - 2;
   const L = getLang();
   const ct = t(state.ct);
-  const when = L === "fa" ? `${today ? "امروز" : "فردا"} ${ct}` : L === "az" ? `${today ? "bu gün" : "sabah"} ${ct}` : (today ? { "ct.morning": "this morning", "ct.noon": "at midday today", "ct.afternoon": "this afternoon", "ct.evening": "this evening" } : { "ct.morning": "tomorrow morning", "ct.noon": "tomorrow at midday", "ct.afternoon": "tomorrow afternoon", "ct.evening": "tomorrow evening" })[state.ct];
+  const when = L === "fa" ? `${today ? "امروز" : "فردا"} ${ct}` : L === "tr" ? (today ? { "ct.morning": "bu sabah", "ct.noon": "bugün öğle saatinde", "ct.afternoon": "bugün öğleden sonra", "ct.evening": "bu akşam" } : { "ct.morning": "yarın sabah", "ct.noon": "yarın öğle saatinde", "ct.afternoon": "yarın öğleden sonra", "ct.evening": "yarın akşam" })[state.ct] : (today ? { "ct.morning": "this morning", "ct.noon": "at midday today", "ct.afternoon": "this afternoon", "ct.evening": "this evening" } : { "ct.morning": "tomorrow morning", "ct.noon": "tomorrow at midday", "ct.afternoon": "tomorrow afternoon", "ct.evening": "tomorrow evening" })[state.ct];
   $("#sheet-panel").innerHTML = `<div class="sent">
     <div class="env"><div class="env-b"></div><div class="env-p"></div><div class="env-f"></div><div class="env-s">${mark()}</div></div>
     <h3>${esc(t("let.sent"))}</h3>

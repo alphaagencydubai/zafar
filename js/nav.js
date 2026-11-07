@@ -1,8 +1,11 @@
-// Alpha's glass navigation, as on KAIRO and Conpanna:
-// - a lens slides under the section you are reading, on a spring
-// - scrolling down folds the capsule (desktop: to the mark and the section's
-//   name; phone: to the current tab); scrolling up, or a tap, opens it again
-// - over dark sections the glass darkens, over the ivory menu it turns light
+// Alpha's glass navigation, v2.
+// - every width is an explicit px value (measured once, re-measured on resize / language /
+//   fonts), so folding and opening are true spring animations, never auto → px jumps
+// - desktop: a top capsule; scrolling down folds it to the mark and the current section's
+//   name (the links crossfade out, the letter pill becomes a round button); scrolling up,
+//   or a tap on the capsule, opens it again
+// - phones: a thumb bar of five tabs; it folds to the current tab beside the letter button
+// - a lens slides under the section you are reading; the glass tints to the section below it
 import { t } from "./i18n.js";
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -16,96 +19,125 @@ const ICO = {
   letter: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/><circle cx="12" cy="13.2" r="2.2" fill="currentColor" stroke="none"/></svg>`,
 };
 const SECS = { home: ["home", "house"], menu: ["menu"], services: ["services", "chauffeur"], circle: ["circle", "account", "occasions"], visit: ["write", "visit"] };
-let nav, caps, row, tabs, cur, chip, active = "home", min = false;
 const narrow = matchMedia("(max-width: 899px)");
+let nav, caps, open, row, tabs, lens, fold, cur, word, mark, letter, chip;
+let active = "home", min = false, M = null;
+const rtl = () => document.documentElement.dir === "rtl";
+const px = (n) => `${Math.round(n * 10) / 10}px`;
 
 export function initNav() {
-  nav = $("#gnav"); caps = $("#gn-caps"); row = $("#gn-row"); tabs = $$(".gn-tab", row); chip = $("#topchip");
+  nav = $("#gnav"); caps = $("#gn-caps"); open = $("#gn-open"); row = $("#gn-row"); tabs = $$(".gn-tab", row); lens = $(".gn-lens", row);
+  fold = $("#gn-fold"); cur = $("#gn-cur"); word = $(".gn-word", caps); mark = $(".gn-mark .zmark", caps); letter = $("#gn-letter"); chip = $("#topchip");
   $$(".gn-ico", nav).forEach((i) => { i.innerHTML = ICO[i.dataset.ico]; });
-  cur = document.createElement("span"); cur.className = "gn-cur"; caps.appendChild(cur);
-  $("#gn-letter").addEventListener("click", () => document.querySelector('[data-letter="visit"]').click());
+  letter.addEventListener("click", () => document.querySelector('[data-letter="visit"]').click());
   caps.addEventListener("click", (e) => {
-    if (min) { e.preventDefault(); setMin(false); return; }
+    if (min) { e.preventDefault(); e.stopPropagation(); setMin(false); return; }
     const a = e.target.closest(".gn-tab"); if (!a) return;
     e.preventDefault();
-    const el = $(a.getAttribute("href"));
     setActive(a.dataset.sec);
-    scrollTo({ top: a.dataset.sec === "home" ? 0 : el.getBoundingClientRect().top + scrollY - (narrow.matches ? 0 : 10), behavior: "smooth" });
+    const el = $(a.getAttribute("href"));
+    scrollTo({ top: a.dataset.sec === "home" ? 0 : el.getBoundingClientRect().top + scrollY, behavior: "smooth" });
   }, true);
+
   let lastY = scrollY, run = 0, ticking = false;
   addEventListener("scroll", () => {
     const y = scrollY, dy = y - lastY; lastY = y;
-    if (y < innerHeight * 0.5) { run = 0; setMin(false); chip?.classList.remove("hide"); }
-    else {
+    if (document.documentElement.style.overflow === "hidden") return;
+    if (y < innerHeight * 0.55) { run = 0; setMin(false); chip?.classList.remove("hide"); }
+    else if (dy) {
       run = Math.sign(dy) === Math.sign(run) ? run + dy : dy;
-      if (run > 56) { setMin(true); chip?.classList.add("hide"); }
-      else if (run < -30) { setMin(false); chip?.classList.remove("hide"); }
+      if (run > 64) { setMin(true); chip?.classList.add("hide"); }
+      else if (run < -36) { setMin(false); chip?.classList.remove("hide"); }
     }
     if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; spy(); retone(); }); }
   }, { passive: true });
-  addEventListener("resize", () => { relens(); retone(); });
-  new ResizeObserver(relens).observe(row);
-  document.fonts?.ready?.then(relens);
-  spy(); retone(); relens();
+  addEventListener("resize", () => relayout(true));
+  narrow.addEventListener?.("change", () => relayout(true));
+  nav.classList.add("no-anim");
+  relayout(true);
+  document.fonts?.ready?.then(() => relayout(true));
+  requestAnimationFrame(() => requestAnimationFrame(() => { nav.classList.remove("no-anim"); nav.classList.add("ready"); }));
+  spy(); retone();
 }
 
-function setActive(sec) {
-  if (sec === active) return;
-  active = sec;
-  tabs.forEach((x) => x.setAttribute("aria-current", x.dataset.sec === sec));
-  relens();
+// measure the two states once; widths only ever animate between these numbers
+function measure() {
+  const cs = getComputedStyle(nav);
+  const H = parseFloat(cs.getPropertyValue("--h")) || 58, pad = parseFloat(cs.getPropertyValue("--pad")) || 6;
+  if (narrow.matches) {
+    const groupW = Math.min(innerWidth - 20, 460);
+    const tw = Math.floor((groupW - H - 8 - pad * 2) / 5);
+    return { narrow: true, H, pad, tw, open: tw * 5 + pad * 2, fold: tw + pad * 2 };
+  }
+  const padS = 18;
+  const markW = mark.getBoundingClientRect().width;
+  const wordW = word.offsetWidth + 11 + 12; // gap + padding-end of the mark
+  const openW = padS + markW + wordW + 4 + open.offsetWidth + pad;
+  cur.textContent = labelOf(active);
+  const foldInset = padS + markW + 14;
+  const foldW = foldInset + fold.offsetWidth + 20;
+  const lab = $(".gl-l", letter);
+  const letterOpen = 22 + 20 + 10 + lab.offsetWidth + 22;
+  return { narrow: false, H, pad, open: openW, fold: foldW, foldInset, letterOpen };
 }
+const labelOf = (sec) => { const a = tabs.find((x) => x.dataset.sec === sec); return a ? a.querySelector("span").textContent : ""; };
+
+export function relayout(remeasure = false) {
+  if (!nav) return;
+  if (remeasure || !M) { const was = nav.classList.contains("no-anim"); nav.classList.add("no-anim"); M = measure(); if (!was) requestAnimationFrame(() => nav.classList.remove("no-anim")); }
+  if (M.narrow) {
+    nav.style.setProperty("--tw", px(M.tw));
+    caps.style.setProperty("--cw", px(min ? M.fold : M.open));
+    nav.style.removeProperty("--lwid");
+  } else {
+    caps.style.setProperty("--cw", px(min ? M.fold : M.open));
+    nav.style.setProperty("--lwid", px(min ? M.H : M.letterOpen));
+    fold.style.insetInlineStart = px(M.foldInset);
+    nav.style.setProperty("--fold-in", rtl() ? "10px" : "-10px");
+    open.style.setProperty("--origin", rtl() ? "right" : "left");
+  }
+  place();
+}
+
+function place() {
+  tabs.forEach((x) => x.setAttribute("aria-current", x.dataset.sec === active));
+  const k = tabs.findIndex((x) => x.dataset.sec === active), a = tabs[k];
+  if (!a) return;
+  if (M && M.narrow) {
+    const shift = min ? (rtl() ? k * M.tw : -k * M.tw) : 0;
+    row.style.setProperty("--rx", px(shift));
+    lens.style.setProperty("--lx", px(a.offsetLeft)); lens.style.setProperty("--lw", px(M.tw));
+  } else {
+    lens.style.setProperty("--lx", px(a.offsetLeft)); lens.style.setProperty("--lw", px(a.offsetWidth));
+    if (cur.textContent !== labelOf(active)) {
+      cur.textContent = labelOf(active);
+      if (M) { M.fold = M.foldInset + fold.offsetWidth + 20; if (min) caps.style.setProperty("--cw", px(M.fold)); }
+    }
+  }
+}
+
+function setActive(sec) { if (sec === active) return; active = sec; place(); }
 function spy() {
   const mid = innerHeight * 0.42;
-  for (const [k, ids] of Object.entries(SECS)) {
-    for (const id of ids) { const el = document.getElementById(id); if (!el) continue; const b = el.getBoundingClientRect(); if (b.top <= mid && b.bottom > mid) { setActive(k); return; } }
+  for (const [k, ids] of Object.entries(SECS)) for (const id of ids) {
+    const el = document.getElementById(id); if (!el) continue;
+    const b = el.getBoundingClientRect(); if (b.top <= mid && b.bottom > mid) { setActive(k); return; }
   }
-}
-export function relens() {
-  if (!tabs) return;
-  tabs.forEach((x) => x.setAttribute("aria-current", x.dataset.sec === active));
-  const a = tabs.find((x) => x.dataset.sec === active);
-  if (!a) { nav.classList.remove("has-lens"); return; }
-  nav.classList.add("has-lens");
-  const rtl = document.documentElement.dir === "rtl";
-  if (narrow.matches) {
-    if (!min) nav.style.setProperty("--row-w", `${row.offsetWidth}px`);
-    const shift = min ? (rtl ? row.offsetWidth - (a.offsetLeft + a.offsetWidth) : -a.offsetLeft) : 0;
-    row.style.setProperty("--row-x", `${shift}px`);
-    nav.style.setProperty("--min-w", `${a.offsetWidth}px`);
-    row.style.setProperty("--lx", `${a.offsetLeft}px`); row.style.setProperty("--lw", `${a.offsetWidth}px`);
-  } else {
-    row.style.setProperty("--row-x", "0px");
-    row.style.setProperty("--lx", `${a.offsetLeft}px`); row.style.setProperty("--lw", `${a.offsetWidth}px`);
-    cur.textContent = a.querySelector("span").textContent;
-    const mk = $(".gn-mark", caps).offsetWidth;
-    nav.style.setProperty("--min-w", `${Math.ceil(24 + mk + cur.offsetWidth + 34)}px`);
-    cur.style.insetInlineStart = `${mk + 16}px`;
-  }
-  const lens = $(".gn-lens", row);
-  lens.style.setProperty("--lx", row.style.getPropertyValue("--lx")); lens.style.setProperty("--lw", row.style.getPropertyValue("--lw"));
 }
 function setMin(on) {
   if (on === min) return;
-  if (on && document.documentElement.style.overflow === "hidden") return;
   min = on;
-  if (narrow.matches) { caps.style.width = ""; nav.classList.toggle("min", on); relens(); return; }
-  clearTimeout(setMin.t);
-  if (on) { caps.style.width = `${caps.offsetWidth}px`; caps.offsetWidth; relens(); nav.classList.add("min"); }
-  else {
-    const from = caps.getBoundingClientRect().width;
-    nav.classList.remove("min"); caps.style.width = "auto"; const to = caps.getBoundingClientRect().width;
-    caps.style.width = `${from}px`; caps.offsetWidth; caps.style.width = `${to}px`;
-    setMin.t = setTimeout(() => { caps.style.width = ""; }, 700);
-    relens();
-  }
+  nav.classList.toggle("min", on);
+  relayout(false);
 }
+export const expand = () => setMin(false);
+
 // which section is under the glass decides its tone
 export function retone() {
   if (!nav) return;
-  const probe = (y) => { for (const el of document.querySelectorAll("[data-tone]")) { if (el === nav || el === chip) continue; const b = el.getBoundingClientRect(); if (b.top <= y && b.bottom >= y) return el.dataset.tone; } return "dark"; };
+  const probe = (y) => { for (const el of document.querySelectorAll("main > [data-tone], footer[data-tone]")) { const b = el.getBoundingClientRect(); if (b.top <= y && b.bottom > y) return el.dataset.tone; } return "dark"; };
   const r = caps.getBoundingClientRect();
-  const tone = probe(r.top + r.height / 2);
-  nav.dataset.tone = tone;
+  nav.dataset.tone = probe(r.top + r.height / 2);
   if (chip) chip.dataset.tone = probe(chip.getBoundingClientRect().top + 23);
 }
+export const relens = () => relayout(true);

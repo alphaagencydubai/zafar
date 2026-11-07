@@ -1,7 +1,7 @@
 // One store shared by the site, the member page and the CEO panel. On one device
 // they talk instantly (localStorage + BroadcastChannel); a real server would
 // replace this file in production. Demo history is seeded once, deterministically.
-const KEY = "zafar.data.v4";
+const KEY = "zafar.data.v5";
 const DAY = 864e5;
 const chan = "BroadcastChannel" in window ? new BroadcastChannel("zafar") : null;
 const subs = new Set();
@@ -18,7 +18,7 @@ export function save() {
   chan && chan.postMessage(1);
   emit("local");
 }
-export function get() { if (!db) { db = read(); if (!db || db.v !== 4) { db = seed(); save(); } } return db; }
+export function get() { if (!db) { db = read(); if (!db || db.v !== 5) { db = seed(); save(); } } return db; }
 export function reset() { db = seed(); save(); }
 export const uid = (p) => `${p}-${Date.now().toString(36).slice(-4).toUpperCase()}${Math.floor(Math.random() * 90 + 10)}`;
 export function audit(by, text) { const d = get(); d.audit.unshift({ ts: Date.now(), by, text }); d.audit = d.audit.slice(0, 400); }
@@ -133,7 +133,7 @@ function seed() {
     if (type === "birthday") Object.assign(fields, { person: pick(W)[0], secret: true });
     if (type === "circle") fields.ref = pick(members.map((m) => guests.find((x) => x.id === m.guestId).name));
     const ts = now - age;
-    requests.push({ id: `L-${24100 - i}`, ts, type, status: st, guestId: g.id, memberId: g.memberId || null, title: g.title, name: g.name, phone: g.phone, callTime: pick(["ct.morning", "ct.afternoon", "ct.evening"]), heard: g.heard, note: pick(["", "", "لطفاً میز کنار پنجره", "پدرم با ویلچر می‌آید", "مهمان خارجی داریم", "اگر ممکن است سالن خصوصی"]), fields, lang: pick(["fa", "fa", "fa", "az", "en"]), host: st === "new" ? null : pick(hosts).id,
+    requests.push({ id: `L-${24100 - i}`, ts, type, status: st, guestId: g.id, memberId: g.memberId || null, title: g.title, name: g.name, phone: g.phone, callTime: pick(["ct.morning", "ct.afternoon", "ct.evening"]), heard: g.heard, note: pick(["", "", "لطفاً میز کنار پنجره", "پدرم با ویلچر می‌آید", "مهمان خارجی داریم", "اگر ممکن است سالن خصوصی"]), fields, lang: pick(["fa", "fa", "fa", "tr", "en"]), host: st === "new" ? null : pick(hosts).id,
       log: [{ ts, by: "guest", text: "نامه از سایت رسید" }, ...(st !== "new" ? [{ ts: ts + 3 * 36e5, by: pick(hosts).id, text: "میزبان تماس گرفت" }] : []), ...(["confirmed", "done"].includes(st) ? [{ ts: ts + 6 * 36e5, by: "M-1", text: "تأیید شد" }] : [])] });
   }
   // occasions kept for guests
@@ -169,6 +169,6 @@ function seed() {
   const demoG = guests.find((g) => g.id === members[0].guestId);
   [1, 9, 16, 24].forEach((i, k) => Object.assign(requests[i], { guestId: demoG.id, memberId: members[0].id, title: "m", name: demoG.name, phone: demoG.phone, type: ["chauffeur", "bespoke", "home", "visit"][k] }));
   occasions.push({ id: "O-90", guestId: demoG.id, memberId: members[0].id, type: "occ.anniv", whose: "ازدواج", date: T0 + 12 * DAY, call: "scheduled" });
-  return { v: 4, seededAt: now, staff, guests, members, tx, requests, occasions, trips, tonight, days, menu: {}, settings: { showPrices: true, callSla: 4, autoReply: "", letterLangs: ["fa", "az", "en"], pin: "1234" }, audit: [{ ts: now - 36e5, by: "M-1", text: "پنل راه‌اندازی شد" }] };
+  return { v: 5, seededAt: now, staff, guests, members, tx, requests, occasions, trips, tonight, days, menu: {}, settings: { showPrices: true, callSla: 4, autoReply: "", letterLangs: ["fa", "tr", "en"], pin: "1234" }, audit: [{ ts: now - 36e5, by: "M-1", text: "پنل راه‌اندازی شد" }] };
 }
 export { DAY };

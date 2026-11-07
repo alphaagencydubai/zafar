@@ -1,13 +1,11 @@
 /* Zafar · CEO panel — Alpha Agency */
-@font-face { font-family: "ZY"; src: url(../assets/fonts/yekan.woff2) format("woff2"); font-weight: 100 1000; font-display: swap; }
-@font-face { font-family: "IN"; src: url(../assets/fonts/in-400.woff2) format("woff2"); font-weight: 400; unicode-range: U+0000-00FF,U+2000-206F; }
-@font-face { font-family: "IN"; src: url(../assets/fonts/in-500.woff2) format("woff2"); font-weight: 500; unicode-range: U+0000-00FF,U+2000-206F; }
-@font-face { font-family: "IN"; src: url(../assets/fonts/in-600.woff2) format("woff2"); font-weight: 600; unicode-range: U+0000-00FF,U+2000-206F; }
+@font-face { font-family: "ZY"; src: url(../assets/fonts/yekan-fa.woff2) format("woff2"); font-weight: 100 1000; font-display: swap; }
+@font-face { font-family: "ZL"; src: url(../assets/fonts/yekan-lat.woff2) format("woff2"); font-weight: 100 1000; font-display: swap; }
 :root {
   --bg: #061A20; --bg2: #08232A; --panel: #0B2C35; --panel2: #0E3540; --line: rgba(235, 211, 162, .11); --line2: rgba(235, 211, 162, .2);
   --tx: rgba(246, 240, 230, .94); --tx2: rgba(246, 240, 230, .64); --tx3: rgba(246, 240, 230, .4);
   --gold: #C9A66B; --gold-hi: #EBD3A2; --teal: #0F5D73; --green: #8FD3B1; --red: #E39B83; --blue: #93C6D3;
-  --fa: "ZY", "IN", system-ui, sans-serif; --lat: "IN", system-ui, sans-serif;
+  --fa: "ZY", system-ui, sans-serif; --lat: "ZL", system-ui, sans-serif;
   --ease: cubic-bezier(.22, 1, .36, 1); --spring: cubic-bezier(.34, 1.45, .64, 1);
   --side: 264px; --r: 18px;
   color-scheme: dark;

@@ -104,7 +104,7 @@ function letterView(r) {
     <p>لطفاً با شماره‌ی <a class="lat" href="tel:${esc(r.phone)}">${esc(fa(r.phone))}</a> تماس بگیرید؛ بهترین زمان تماس، <b>${lbl(r.callTime)}</b> است.</p>
     ${r.note ? `<blockquote>${esc(r.note)}</blockquote>` : ""}
     <p class="pp-s">ارادتمند، <span>${esc(honorFa(r))}</span></p>
-    <div class="pp-meta">${r.heard ? pill("آشنایی: " + lbl(r.heard), "mute") : ""}${r.lang && r.lang !== "fa" ? pill("نوشته به " + ({ az: "ترکی آذربایجانی", en: "انگلیسی" }[r.lang] || r.lang), "blue") : ""}${mm ? pill("عضو حلقه · " + TIER[mm.tier], "tier-" + mm.tier) : ""}${g ? `<a class="pill mute" href="#/guests/${g.id}">پرونده‌ی مهمان ›</a>` : ""}${waited ? pill("منتظر از " + waited, "red") : ""}</div>
+    <div class="pp-meta">${r.heard ? pill("آشنایی: " + lbl(r.heard), "mute") : ""}${r.lang && r.lang !== "fa" ? pill("نوشته به " + ({ tr: "ترکی استانبولی", en: "انگلیسی" }[r.lang] || r.lang), "blue") : ""}${mm ? pill("عضو حلقه · " + TIER[mm.tier], "tier-" + mm.tier) : ""}${g ? `<a class="pill mute" href="#/guests/${g.id}">پرونده‌ی مهمان ›</a>` : ""}${waited ? pill("منتظر از " + waited, "red") : ""}</div>
   </article>
   <div class="ib-acts">
     ${field("میزبان مسئول", `<select data-host="${r.id}">${opt([["", "—"], ...hosts().map((h) => [h.id, h.name])], r.host)}</select>`)}

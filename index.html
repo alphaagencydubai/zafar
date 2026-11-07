@@ -13,15 +13,14 @@
 <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="preload" href="assets/fonts/yekan.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/cg-300.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/yekan-fa.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/yekan-lat.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/video/hero-poster.jpg" as="image">
-<link rel="stylesheet" href="css/site.css?v=45792fa0ba">
-<script>try{var l=localStorage.getItem("zafar.lang");var q=new URLSearchParams(location.search).get("lang");l=q||l;if(l==="az"||l==="en"){document.documentElement.lang=l==="az"?"az-Latn":"en";document.documentElement.dir="ltr";document.documentElement.dataset.lang=l}}catch(e){}</script>
-<script type="module" src="js/site.js?v=45792fa0ba"></script>
+<link rel="stylesheet" href="css/site.css?v=48c2cbe448">
+<script>try{var l=localStorage.getItem("zafar.lang");var q=new URLSearchParams(location.search).get("lang");l=q||l;if(l==="tr"||l==="en"){document.documentElement.lang=l;document.documentElement.dir="ltr";document.documentElement.dataset.lang=l}}catch(e){}</script>
+<script type="module" src="js/site.js?v=48c2cbe448"></script>
 </head>
 <body>
-<a class="skip" href="#menu" data-t="nav.menu">منو</a>
 
 <!-- Opening: Zafar's mark draws itself in gold, the name rises, the curtain parts -->
 <div id="boot" aria-hidden="true">
@@ -41,17 +40,20 @@
 <nav class="gnav" id="gnav" data-tone="dark" aria-label="Zafar">
   <div class="gn-caps" id="gn-caps">
     <a class="gn-mark" href="#home" aria-label="Zafar"><svg class="zmark" viewBox="30 30 640 825" aria-hidden="true"><path class="mk-a" pathLength="1" d="M341 37L35 379V427H215L168 380H101L288 172V498L341 552Z"/><path class="mk-b" pathLength="1" d="M359 849L665 507V459H485L532 506H599L412 714V388L359 334Z"/><circle class="mk-c" pathLength="1" cx="227" cy="563" r="60"/><circle class="mk-d" pathLength="1" cx="463" cy="306" r="60"/></svg><span class="gn-word">ZAFAR</span></a>
-    <div class="gn-row" id="gn-row">
-      <span class="gn-lens" aria-hidden="true"></span>
-      <a class="gn-tab" href="#home" data-sec="home"><i class="gn-ico" data-ico="home"></i><span data-t="nav.home">خانه</span></a>
-      <a class="gn-tab" href="#menu" data-sec="menu"><i class="gn-ico" data-ico="menu"></i><span data-t="nav.menu">منو</span></a>
-      <a class="gn-tab" href="#services" data-sec="services"><i class="gn-ico" data-ico="services"></i><span data-t="nav.services">خدمات</span></a>
-      <a class="gn-tab" href="#circle" data-sec="circle"><i class="gn-ico" data-ico="circle"></i><span data-t="nav.circle">حلقه</span></a>
-      <a class="gn-tab" href="#visit" data-sec="visit"><i class="gn-ico" data-ico="visit"></i><span data-t="nav.visit">دیدار</span></a>
+    <div class="gn-open" id="gn-open">
+      <div class="gn-row" id="gn-row">
+        <span class="gn-lens" aria-hidden="true"></span>
+        <a class="gn-tab" href="#home" data-sec="home"><i class="gn-ico" data-ico="home"></i><span data-t="nav.home">خانه</span></a>
+        <a class="gn-tab" href="#menu" data-sec="menu"><i class="gn-ico" data-ico="menu"></i><span data-t="nav.menu">منو</span></a>
+        <a class="gn-tab" href="#services" data-sec="services"><i class="gn-ico" data-ico="services"></i><span data-t="nav.services">خدمات</span></a>
+        <a class="gn-tab" href="#circle" data-sec="circle"><i class="gn-ico" data-ico="circle"></i><span data-t="nav.circle">حلقه</span></a>
+        <a class="gn-tab" href="#visit" data-sec="visit"><i class="gn-ico" data-ico="visit"></i><span data-t="nav.visit">دیدار</span></a>
+      </div>
+      <div class="langs gn-langs" role="group" data-ta="nav.lang"></div>
     </div>
-    <div class="langs gn-langs" role="group" data-ta="nav.lang"></div>
+    <button class="gn-fold" id="gn-fold" type="button" tabindex="-1" aria-hidden="true"><span class="gn-cur" id="gn-cur"></span><i class="gn-dots"><b></b><b></b><b></b></i></button>
   </div>
-  <button class="gn-letter" id="gn-letter" type="button"><i class="gn-ico" data-ico="letter"></i><span class="gl-s" data-t="nav.letter">نامه</span><span class="gl-l" data-t="nav.write">نامه به ظفر</span></button>
+  <button class="gn-letter" id="gn-letter" type="button"><i class="gn-ico gl-i" data-ico="letter"></i><span class="gl-l" data-t="nav.write">نامه به ظفر</span><span class="gl-s" data-t="nav.letter">نامه</span></button>
 </nav>
 
 <main id="main">

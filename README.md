@@ -2,7 +2,7 @@
 
 Alpha Agency built this preview for Zafar Continental, a restaurant in Tabriz (Instagram `@zafar_continental`).
 
-- Site: `index.html`, in Persian, Azerbaijani Turkish (Latin script) and English
+- Site: `index.html`, in Persian, Turkish and English
 - Zafar Circle member page (opened by tapping the NFC card): `member.html`, with demo cards for ZC-1001, a Gold member and a Teal member
 - CEO panel (پنل مدیرعامل): `admin.html`, demo PIN `1234`
 
@@ -30,7 +30,7 @@ Alpha Agency built this preview for Zafar Continental, a restaurant in Tabriz (I
   - 32: membership anniversary gift
   - 34: the Zafar Account, a charge account in the Amex style (sign at the table, one statement a month, settle in person, companion cards, no preset limit at Noir)
   - 55: full buyout
-  - 76: three languages
+  - 76: three languages (Persian, Turkish, English)
   - 88 plus anywhere-to-Zafar and Zafar-to-anywhere: private driver
   - bespoke dish
 - No online payment and no online reservation anywhere, by Zafar's choice. Every request becomes a letter, and the host calls.

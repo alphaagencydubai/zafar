@@ -48,7 +48,12 @@ export const ICON = {
 
 // reveal on scroll
 const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -6% 0px", threshold: 0.06 });
-export const observe = (r = document) => $$(".reveal:not(.in)", r).forEach((el) => io.observe(el));
+export const observe = (r = document) => { $$(".reveal:not(.in)", r).forEach((el) => io.observe(el)); sweep(); };
+// fallback: a fast scroll can jump over an element between frames; anything at or above the fold shows
+let sw = 0;
+function sweep() { sw = 0; const lim = innerHeight * 0.96; $$(".reveal:not(.in)").forEach((el) => { if (el.getBoundingClientRect().top < lim) { el.classList.add("in"); io.unobserve(el); } }); }
+addEventListener("scroll", () => { if (!sw) sw = requestAnimationFrame(sweep); }, { passive: true });
+addEventListener("resize", () => { if (!sw) sw = requestAnimationFrame(sweep); });
 
 // segmented control with a sliding lens
 export function seg(el, items, cur, onPick) {

@@ -382,3 +382,10 @@ body { font-size: 15px; }
   .top #collapse { display: none; }
 }
 @media (max-width: 860px) { .bar-row .seg-a { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; max-width: 100%; } .bar-row .seg-a::-webkit-scrollbar { display: none; } .bar-row .seg-a .b { flex: none; } }
+/* laptop widths: letter on top, its actions underneath, so the letter is never squeezed */
+@media (max-width: 1480px) and (min-width: 1101px) {
+  .inbox { grid-template-columns: 330px 1fr; }
+  .ib-read { grid-template-columns: 1fr; }
+  .ib-acts { position: static; }
+  .ib-acts .row .b.gold { flex: 1 1 auto; }
+}

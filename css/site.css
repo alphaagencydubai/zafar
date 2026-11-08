@@ -429,7 +429,7 @@ main > .menu { padding: 0 0 var(--sec); background: var(--ivory); }
 [data-tone="light"] .steps b { color: var(--night); } [data-tone="light"] .steps p { color: var(--text-2); } [data-tone="light"] .st-n { color: var(--gold-ink); }
 main > .how { background: linear-gradient(180deg, var(--night), var(--deep)); padding-bottom: 40px; }
 main > .svc-index { background: var(--deep); padding-top: 40px; }
-.grp-jump { position: sticky; top: calc(90px + var(--safe-t)); z-index: 4; display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 70px; padding: 6px; width: max-content; max-width: 100%; border-radius: 999px; background: rgba(7, 30, 37, .55); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); box-shadow: var(--edge-d); }
+.grp-jump { position: relative; display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 70px; padding: 6px; width: max-content; max-width: 100%; border-radius: 999px; background: rgba(7, 30, 37, .55); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); box-shadow: var(--edge-d); }
 .grp-jump a { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 999px; color: var(--on-dark-2); font: 500 14px/1 var(--body); transition: background-color .25s, color .25s; }
 .grp-jump a:hover { background: rgba(255, 255, 255, .07); color: var(--on-dark); }
 .grp-jump small { color: var(--gold); font-size: 11.5px; }
@@ -929,18 +929,18 @@ select.blank { appearance: none; -webkit-appearance: none; padding-inline-end: 1
 .lf { display: grid; gap: 7px; min-width: 0; align-content: start; }
 .lf.wide { grid-column: 1 / -1; }
 .lf-l { color: var(--text-2); font: 500 13.5px/1.4 var(--body); }
-.in { width: 100%; min-width: 0; height: 52px; padding: 0 14px; border: 0; outline: 0; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 1px rgba(10, 38, 46, .14); color: var(--text); font: 400 16px/1.4 var(--body); transition: box-shadow .2s; color-scheme: light; }
-.in:focus { box-shadow: inset 0 0 0 2px var(--teal); }
-.in.err { box-shadow: inset 0 0 0 2px #B9573C; }
-textarea.in { height: auto; min-height: 88px; padding: 12px 14px; line-height: 1.7; resize: vertical; }
-select.in { appearance: none; -webkit-appearance: none; padding-inline-end: 34px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%230E2229' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right 12px center / 12px; }
-:root[dir="rtl"] select.in { background-position: left 12px center; }
+.fi { width: 100%; min-width: 0; height: 52px; padding: 0 14px; border: 0; outline: 0; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 1px rgba(10, 38, 46, .14); color: var(--text); font: 400 16px/1.4 var(--body); transition: box-shadow .2s; color-scheme: light; }
+.fi:focus { box-shadow: inset 0 0 0 2px var(--teal); }
+.fi.err { box-shadow: inset 0 0 0 2px #B9573C; }
+textarea.fi { height: auto; min-height: 88px; padding: 12px 14px; line-height: 1.7; resize: vertical; }
+select.fi { appearance: none; -webkit-appearance: none; padding-inline-end: 34px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%230E2229' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right 12px center / 12px; }
+:root[dir="rtl"] select.fi { background-position: left 12px center; }
 .lf .jdate { display: grid; grid-template-columns: 1fr 1.5fr 1.1fr; gap: 6px; }
 .lf .jdate select { padding-inline: 10px 26px; }
 .stepper { display: grid; grid-template-columns: 52px 1fr 52px; gap: 6px; }
 .stepper button { height: 52px; border-radius: 14px; background: rgba(10, 38, 46, .06); color: var(--night); font: 400 22px/1 var(--lat); transition: background-color .2s, transform .2s var(--spring); }
 .stepper button:active { transform: scale(.92); background: rgba(201, 166, 107, .25); }
-.stepper .in { text-align: center; -moz-appearance: textfield; } .stepper .in::-webkit-inner-spin-button { -webkit-appearance: none; }
+.stepper .fi { text-align: center; -moz-appearance: textfield; } .stepper .fi::-webkit-inner-spin-button { -webkit-appearance: none; }
 .lt .chips { gap: 8px; }
 .lt .chips button { height: 44px; padding: 0 18px; border-radius: 999px; font: 500 14.5px/1 var(--body); color: var(--text-2); background: #fff; box-shadow: inset 0 0 0 1px rgba(10, 38, 46, .14); transition: background-color .2s, color .2s, box-shadow .2s; }
 .lt .chips button[aria-pressed="true"] { background: var(--night); color: var(--gold-hi); box-shadow: none; }

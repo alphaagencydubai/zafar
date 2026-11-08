@@ -54,14 +54,14 @@ const STEPS = ["let.s1", "let.s2", "let.s3"];
 
 function control(f) {
   const v = state.f[f.k];
-  if (f.type === "date") return dateInput("f_" + f.k, v, "in");
-  if (f.type === "time") return `<input class="in" name="f_${f.k}" type="time" value="${esc(v || "")}">`;
-  if (f.type === "num") return `<div class="stepper" data-num="${f.k}" data-min="${f.min || 1}" data-max="${f.max || 99}"><button type="button" data-d="-1" aria-label="−">−</button><input class="in" name="f_${f.k}" type="number" inputmode="numeric" min="${f.min || 1}" max="${f.max || 99}" value="${esc(v ?? "")}" placeholder="—"><button type="button" data-d="1" aria-label="+">+</button></div>`;
-  if (f.type === "area") return `<textarea class="in" name="f_${f.k}" rows="2">${esc(v || "")}</textarea>`;
+  if (f.type === "date") return dateInput("f_" + f.k, v, "fi");
+  if (f.type === "time") return `<input class="fi" name="f_${f.k}" type="time" value="${esc(v || "")}">`;
+  if (f.type === "num") return `<div class="stepper" data-num="${f.k}" data-min="${f.min || 1}" data-max="${f.max || 99}"><button type="button" data-d="-1" aria-label="−">−</button><input class="fi" name="f_${f.k}" type="number" inputmode="numeric" min="${f.min || 1}" max="${f.max || 99}" value="${esc(v ?? "")}" placeholder="—"><button type="button" data-d="1" aria-label="+">+</button></div>`;
+  if (f.type === "area") return `<textarea class="fi" name="f_${f.k}" rows="2">${esc(v || "")}</textarea>`;
   if (f.type === "choice") return `<div class="chips" data-k="${f.k}" data-mode="one">${f.opts.map((o) => `<button type="button" data-v="${o}" aria-pressed="${v === o}">${esc(label(o))}</button>`).join("")}</div>`;
   if (f.type === "checks") return `<div class="chips" data-k="${f.k}" data-mode="many">${f.opts.map((o) => `<button type="button" data-v="${o}" aria-pressed="${(v || []).includes(o)}">${esc(label(o))}</button>`).join("")}</div>`;
   if (f.type === "check") return `<div class="chips" data-k="${f.k}" data-mode="flag"><button type="button" data-v="1" aria-pressed="${!!v}">${esc(t(f.l))}</button></div>`;
-  return `<input class="in" name="f_${f.k}" type="${f.type === "tel" ? "tel" : "text"}" value="${esc(v || "")}" autocomplete="off">`;
+  return `<input class="fi" name="f_${f.k}" type="${f.type === "tel" ? "tel" : "text"}" value="${esc(v || "")}" autocomplete="off">`;
 }
 const fieldBox = (f) => `<div class="lf ${["choice", "checks", "check", "area", "text"].includes(f.type) && f.k !== "guests" ? "wide" : ""}"><span class="lf-l">${f.type === "check" ? esc(t("let.extra")) : esc(t(f.l))}</span>${control(f)}</div>`;
 
@@ -72,14 +72,14 @@ function stepBody() {
   if (state.step === 1) return `<div class="chosen"><span class="sj-i">${ICON[SUB_ICO[state.type]] || ""}</span><div><b>${brandSafe(pick(s.t))}</b>${s.s && pick(s.s) ? `<small>${esc(pick(s.s))}</small>` : ""}</div><button type="button" class="lt-link" data-go="0">${esc(t("let.change"))}</button></div>
     <h3 class="lt-q">${esc(t("let.q2"))} <em>${esc(t("let.opt"))}</em></h3>
     <div class="lf-grid">${s.fields.map(fieldBox).join("")}
-      <div class="lf wide"><span class="lf-l">${esc(t("let.msg"))}</span><textarea class="in" name="note" rows="3" placeholder="${esc(t("let.note"))}">${esc(state.note)}</textarea></div></div>`;
+      <div class="lf wide"><span class="lf-l">${esc(t("let.msg"))}</span><textarea class="fi" name="note" rows="3" placeholder="${esc(t("let.note"))}">${esc(state.note)}</textarea></div></div>`;
   return `<h3 class="lt-q">${esc(t("let.q3"))}</h3>
     <div class="lf-grid">
       <div class="lf wide"><span class="lf-l">${esc(t("let.you"))}</span><div class="chips" data-k="__title" data-mode="one"><button type="button" data-v="m" aria-pressed="${state.title === "m"}">${esc(t("let.m"))}</button><button type="button" data-v="f" aria-pressed="${state.title === "f"}">${esc(t("let.f"))}</button></div></div>
-      <label class="lf"><span class="lf-l">${esc(t("f.yourname"))}</span><input class="in" name="name" value="${esc(state.name)}" autocomplete="name" enterkeyhint="next"></label>
-      <label class="lf"><span class="lf-l">${esc(t("vis.mobile"))}</span><input class="in" name="phone" type="tel" dir="ltr" inputmode="tel" value="${esc(state.phone)}" autocomplete="tel" placeholder="09…" enterkeyhint="send"></label>
+      <label class="lf"><span class="lf-l">${esc(t("f.yourname"))}</span><input class="fi" name="name" value="${esc(state.name)}" autocomplete="name" enterkeyhint="next"></label>
+      <label class="lf"><span class="lf-l">${esc(t("vis.mobile"))}</span><input class="fi" name="phone" type="tel" dir="ltr" inputmode="tel" value="${esc(state.phone)}" autocomplete="tel" placeholder="09…" enterkeyhint="send"></label>
       <div class="lf wide"><span class="lf-l">${esc(t("let.ctq"))}</span><div class="chips" data-k="__ct" data-mode="one">${CT.map((c) => `<button type="button" data-v="${c}" aria-pressed="${state.ct === c}">${esc(t(c.replace("ct.", "ctc.")))}</button>`).join("")}</div></div>
-      <label class="lf wide"><span class="lf-l">${esc(t("let.heard"))} <em>${esc(t("let.opt"))}</em></span><select class="in" name="heard"><option value="">—</option>${HEARD.map((h) => `<option value="${h}"${state.heard === h ? " selected" : ""}>${esc(t(h))}</option>`).join("")}</select></label>
+      <label class="lf wide"><span class="lf-l">${esc(t("let.heard"))} <em>${esc(t("let.opt"))}</em></span><select class="fi" name="heard"><option value="">—</option>${HEARD.map((h) => `<option value="${h}"${state.heard === h ? " selected" : ""}>${esc(t(h))}</option>`).join("")}</select></label>
     </div>
     <div class="lt-preview" id="lt-preview">${preview()}</div>`;
 }

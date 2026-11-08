@@ -61,7 +61,7 @@ export const SERVICES = [
     s: { fa: "برای مهمانان ویژه، سرآشپز غذایی طراحی می‌کند که در هیچ منویی نیست.", tr: "Özel misafirlerimiz için şef, hiçbir menüde olmayan bir yemek tasarlar.", en: "For our special guests, the chef designs a dish that appears on no menu." } },
   // ——— not in the grid
   { id: "circle", n: 26, group: null, img: "s_12.6", fields: [{ k: "ref", type: "text", l: "f.ref" }],
-    t: { fa: "معرفی به حلقه‌ی ظفر", tr: "Zafar Circle'a tanıştırılmak", en: "An introduction to Zafar Circle" },
+    t: { fa: "معرفی به اعتبار ظفر", tr: "Zafar Etebar'a tanıştırılmak", en: "An introduction to Zafar Etebar" },
     s: { fa: "عضویت تنها با دعوت است؛ میزبان ما با شما و معرف‌تان گفت‌وگو می‌کند.", tr: "Üyelik yalnızca davetledir; ev sahibimiz sizinle ve sizi tanıştıran kişiyle görüşür.", en: "Membership is by invitation; our host will speak with you and with whoever introduced you." } },
   { id: "occasion", n: 29, group: null, img: "s_12.6", fields: [],
     t: { fa: "سپردن یک مناسبت", tr: "Özel bir günü bize bırakmak", en: "Leaving an occasion with us" }, s: { fa: "", tr: "", en: "" } },

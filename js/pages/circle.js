@@ -1,4 +1,4 @@
-// Zafar Circle, the Zafar Account (with where each card works) and the Occasion Keeper.
+// Zafar Etebar, the Zafar Account (with where each card works) and the Occasion Keeper.
 import { t, getLang, pick, digits, fdate, mtoman } from "../i18n.js";
 import { mark, card, tilt } from "../brand.js";
 import { get, me, setMe, addRequest } from "../data.js";
@@ -10,7 +10,7 @@ const NAMES = { teal: ["AYLAR AZIMI", "ZC-1014"], gold: ["SAHAND MILANI", "ZC-10
 const cardOf = (tier, cls = "") => card({ tier, name: NAMES[tier][0], id: NAMES[tier][1], since: Date.now() - 360 * 864e5, cls });
 let tier = "gold";
 
-// ———————————————————————— Circle
+// ———————————————————————— Etebar
 export const circleTitle = () => `${t("cir.k")} · ${zafar()}`;
 export function circleHtml() {
   const P = [["host", "cir.p1t", "cir.p1"], ["nfc", "cir.p2t", "cir.p2"], ["acc", "cir.p6t", "cir.p6"], ["occ", "cir.p3t", "cir.p3"], ["gift", "cir.p4t", "cir.p4"], ["dish", "cir.p5t", "cir.p5"]];

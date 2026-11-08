@@ -8,7 +8,36 @@ import { SECTIONS as S2 } from "./v-account.js";
 import { SECTIONS as S3 } from "./v-services.js";
 import { SECTIONS as S4 } from "./v-house.js";
 
-const SECTIONS = [...S1, ...S2, ...S3, ...S4];
+// Plain names, one line on what each page is for, and simpler groups. Every section stays.
+const META = {
+  dash: ["امروز", "روزانه", "هر چه امروز به شما نیاز دارد، در یک نگاه."],
+  tonight: ["امشب", "روزانه", "مهمانان امشب را با نام خوشامد بگویید و وضعیتشان را ثبت کنید."],
+  inbox: ["نامه‌ها", "روزانه", "نامه‌ی مهمان را باز کنید، تماس بگیرید، تأیید کنید."],
+  guests: ["مهمانان", "مهمانان", "پرونده‌ی هر مهمان: سلیقه، حساسیت‌ها و دیدارها."],
+  occasions: ["مناسبت‌ها", "مهمانان", "تولدها و سالگردها؛ یک هفته قبل تماس بگیرید."],
+  circle: ["اعتبار ظفر", "مهمانان", "اعضا، سطح کارت‌ها و کارت‌های NFC."],
+  accounts: ["حساب‌ها", "حساب و اعتبار", "مانده و سقف حساب هر عضو."],
+  post: ["امضا و تسویه", "حساب و اعتبار", "امضای سر میز را ثبت کنید یا تسویه را بگیرید."],
+  statements: ["صورت‌حساب‌ها", "حساب و اعتبار", "صورت‌حساب ماهانه‌ی هر عضو، آماده‌ی چاپ."],
+  ar: ["مطالبات", "حساب و اعتبار", "چه کسی، چقدر و از چه زمانی بدهکار است."],
+  home: ["ظفر در خانه", "خدمات", "سرو در منزل، سرآشپز مقیم و تحویل دستی."],
+  events: ["مراسم", "خدمات", "تقویم مراسم، خواستگاری‌ها و اجاره‌ی کامل."],
+  drivers: ["راننده‌ها", "خدمات", "سفرهای امروز و رانندگان آزاد."],
+  gifts: ["هدیه‌ها", "خدمات", "جعبه‌های هدیه و شب‌های هدیه."],
+  bespoke: ["غذای اختصاصی", "خدمات", "درخواست غذای سفارشی و جلسه‌ی چشیدن."],
+  menu: ["منو و قیمت", "رستوران", "قیمت را عوض کنید یا غذایی را پنهان کنید؛ روی سایت فوراً دیده می‌شود."],
+  sales: ["فروش", "رستوران", "درآمد هر روز و هر خط خدمت."],
+  pnl: ["سود و زیان", "رستوران", "درآمد، هزینه و سود هر ماه."],
+  staff: ["کارکنان", "رستوران", "میزبان‌ها، آشپزها، رانندگان و شیفت‌ها."],
+  reports: ["گزارش‌ها", "سیستم", "خروجی اکسل و خلاصه برای چاپ."],
+  access: ["دسترسی", "سیستم", "چه کسی، چه کاری، چه زمانی."],
+  settings: ["تنظیمات", "سیستم", "رمز، نمایش قیمت‌ها و زمان پاسخ به نامه‌ها."],
+};
+const ORDER = Object.keys(META);
+const SECTIONS = [...S1, ...S2, ...S3, ...S4].map((x) => ({ ...x, full: x.t, t: META[x.id]?.[0] || x.t, g: META[x.id]?.[1] || x.g, d: META[x.id]?.[2] || "" })).sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id));
+export const SEC = SECTIONS;
+// quick actions: open a page and press its main button
+const QUICK = [["تماس با نامه‌ی تازه", "inbox", "", "letter"], ["ثبت امضا", "post", "[data-post-new]", "pen"], ["مهمان امشب", "tonight", "[data-act=add-tonight]", "door"], ["مهمان تازه", "guests", "[data-act=new-guest]", "people"], ["ثبت تسویه", "post", "[data-settle-new]", "acc"], ["دعوت به اعتبار", "circle", "[data-act=inv]", "card"]];
 const P = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const ICO = {
   dash: P('<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>'),
@@ -50,7 +79,7 @@ function shell() {
   </aside>
   <div class="scrim" id="scrim"></div>
   <div class="main">
-    <header class="top"><button class="ib burger" id="burger" aria-label="منو">☰</button><button class="ib" id="collapse" aria-label="جمع کردن">${P('<path d="M4 6h16M4 12h10M4 18h16"/>')}</button><h1 id="title"></h1>
+    <header class="top"><button class="ib burger" id="burger" aria-label="منو">☰</button><button class="ib" id="collapse" aria-label="جمع کردن">${P('<path d="M4 6h16M4 12h10M4 18h16"/>')}</button><div class="tt"><h1 id="title"></h1><p id="tdesc"></p></div>
       <button class="search" id="search">${P('<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>')}<span>جست‌وجو در مهمانان، نامه‌ها و بخش‌ها</span><kbd class="lat">⌘K</kbd></button>
       <button class="ib bell" id="bell" aria-label="هشدارها">${P('<path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 004 0"/>')}<i id="bell-n"></i></button>
       <button class="ib" id="theme" aria-label="روشن / تیره">${P('<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>')}</button>
@@ -63,6 +92,7 @@ function shell() {
   <div class="drawer" id="drawer" hidden><div class="dw-bg" data-dclose></div><div class="dw-in"></div></div>
   <div class="modal" id="modal" hidden><div class="md-bg" data-mclose></div><div class="md-in"></div></div>
   <div class="pal" id="pal" hidden><div class="pal-bg"></div><div class="pal-in"><input id="pal-q" placeholder="نام مهمان، کد نامه، بخش…" autocomplete="off"><ul id="pal-r"></ul></div></div>
+  <nav class="tabbar" id="tabbar">${[["dash", "امروز", "dash"], ["tonight", "امشب", "door"], ["inbox", "نامه‌ها", "letter"], ["guests", "مهمانان", "people"]].map(([id, l, i]) => `<a href="#/${id}" data-tab="${id}">${ICO[i]}<span>${l}</span><i class="bd" data-bd="${id}"></i></a>`).join("")}<button type="button" id="tab-all">${P('<circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/>')}<span>همه</span></button></nav>
   <div class="toast" id="toast"></div>`;
 }
 
@@ -70,16 +100,41 @@ function nav() {
   const groups = [...new Set(SECTIONS.map((s) => s.g))];
   const cur = location.hash.slice(2).split("/")[0] || "dash";
   $("#sd-nav").innerHTML = groups.map((g) => `<div class="sd-g"><small>${g}</small>${SECTIONS.filter((s) => s.g === g).map((s) => { const b = s.badge ? s.badge() : 0; return `<a href="#/${s.id}" class="${s.id === cur ? "on" : ""}" title="${s.t}">${ICO[s.ico] || ""}<span>${s.t}</span>${b ? `<i class="bd">${fa(b)}</i>` : ""}</a>`; }).join("")}</div>`).join("");
+  $$("#tabbar [data-tab]").forEach((a) => { a.classList.toggle("on", a.dataset.tab === cur); const s = SECTIONS.find((x) => x.id === a.dataset.tab); const b = s?.badge ? s.badge() : 0; a.querySelector(".bd").textContent = b ? fa(b) : ""; });
   const al = alerts(); $("#bell-n").textContent = al.length ? fa(al.length) : ""; $("#bell").classList.toggle("has", !!al.length);
+}
+
+// "Today": the top of the dashboard — what needs you now, and one-tap actions
+function today() {
+  const d = db(), now = Date.now(), h = new Date().getHours();
+  const hi = h < 12 ? "صبح بخیر" : h < 17 ? "روز بخیر" : "عصر بخیر";
+  const dateFa = new Intl.DateTimeFormat("fa-IR-u-ca-persian", { weekday: "long", day: "numeric", month: "long" }).format(now);
+  const newL = d.requests.filter((r) => r.status === "new"), ton = d.tonight.filter((x) => x.status === "expected");
+  const al = alerts();
+  const rows = [
+    newL.length ? { k: "red", t: `${fa(newL.length)} نامه‌ی تازه منتظر تماس شماست`, b: "دیدن نامه‌ها", go: "#/inbox" } : null,
+    ton.length ? { k: "gold", t: `${fa(ton.length)} میهمانی امشب هنوز نرسیده‌اند`, b: "فهرست امشب", go: "#/tonight" } : null,
+    ...al.filter((a) => !a.go.startsWith("inbox")).slice(0, 4).map((a) => ({ k: a.k, t: a.t, b: "انجام", go: "#/" + a.go })),
+  ].filter(Boolean);
+  return `<section class="today">
+    <div class="td-h"><div><h2>${hi}</h2><p>${dateFa}</p></div><span class="td-n">${rows.length ? `${fa(rows.length)} کار برای امروز` : "امروز کاری منتظر شما نیست"}</span></div>
+    ${rows.length ? `<ul class="todo">${rows.map((r) => `<li class="${r.k}"><span class="td-dot"></span><b>${esc(r.t)}</b><a class="b" href="${r.go}">${r.b}</a></li>`).join("")}</ul>` : ""}
+    <div class="quick">${QUICK.map(([l, id, sel, i]) => `<a href="#/${id}" data-quick="${id}|${sel}">${ICO[i] || ""}<span>${l}</span></a>`).join("")}</div>
+  </section>`;
+}
+function launcher() {
+  const groups = [...new Set(SECTIONS.map((s) => s.g))];
+  return `<section class="launch"><h3>همه‌ی بخش‌ها</h3>${groups.map((g) => `<div class="ln-g"><small>${g}</small><div class="ln-grid">${SECTIONS.filter((s) => s.g === g).map((s) => `<a href="#/${s.id}">${ICO[s.ico] || ""}<div><b>${s.t}</b><span>${s.d}</span></div></a>`).join("")}</div></div>`).join("")}</section>`;
 }
 
 function route() {
   const [id, arg] = (location.hash.slice(2) || "dash").split("/");
   const s = SECTIONS.find((x) => x.id === id) || SECTIONS[0];
-  $("#title").textContent = s.t;
+  $("#title").textContent = s.t; $("#tdesc").textContent = s.d;
   const v = $("#view");
   if (v.dataset.s !== s.id) { v.dataset.s = s.id; v.innerHTML = ""; v._f = null; v.dataset.door = "0"; v.classList.remove("in"); void v.offsetWidth; v.classList.add("in"); }
   s.r(v, arg);
+  if (s.id === "dash") { v.insertAdjacentHTML("afterbegin", today()); v.insertAdjacentHTML("beforeend", launcher()); }
   nav();
   if (!arg) closeDrawer();
   document.title = `${s.t} · ظفر`;
@@ -93,7 +148,7 @@ function palette(open = true) {
   function draw(s) {
     const d = db(); const t = s.trim();
     const sec = SECTIONS.filter((x) => !t || x.t.includes(t)).slice(0, 6).map((x) => ({ h: `#/${x.id}`, l: x.t, k: "بخش" }));
-    const gs = t ? d.guests.filter((g) => `${g.name} ${g.nameLat} ${g.phone} ${g.id} ${g.memberId || ""}`.toLowerCase().includes(t.toLowerCase())).slice(0, 6).map((g) => ({ h: `#/guests/${g.id}`, l: honorFa(g), k: g.memberId ? "عضو حلقه" : "مهمان" })) : [];
+    const gs = t ? d.guests.filter((g) => `${g.name} ${g.nameLat} ${g.phone} ${g.id} ${g.memberId || ""}`.toLowerCase().includes(t.toLowerCase())).slice(0, 6).map((g) => ({ h: `#/guests/${g.id}`, l: honorFa(g), k: g.memberId ? "عضو اعتبار ظفر" : "مهمان" })) : [];
     const ls = t ? d.requests.filter((r) => `${r.id} ${r.name} ${TYPE[r.type]}`.includes(t)).slice(0, 5).map((r) => ({ h: `#/inbox/${r.id}`, l: `${r.id} · ${r.name}`, k: TYPE[r.type] })) : [];
     $("#pal-r").innerHTML = [...sec, ...gs, ...ls].map((r, i) => `<li><a href="${r.h}" class="${i === 0 ? "on" : ""}"><span>${esc(r.l)}</span><small>${esc(r.k)}</small></a></li>`).join("") || `<li class="empty">چیزی پیدا نشد</li>`;
   }
@@ -123,6 +178,8 @@ function boot() {
   $("#lockb").onclick = () => { sessionStorage.removeItem("zafar.unlocked"); $("#lock").hidden = false; };
   $("#search").onclick = () => palette(true);
   $("#pal").addEventListener("click", (e) => { if (e.target.classList.contains("pal-bg") || e.target.closest("#pal-r a")) palette(false); });
+  $("#tab-all").onclick = () => { $("#side").classList.add("open"); $("#scrim").classList.add("on"); };
+  document.addEventListener("click", (e) => { const q = e.target.closest("[data-quick]"); if (!q) return; e.preventDefault(); const [id, sel] = q.dataset.quick.split("|"); const go = () => setTimeout(() => { const el = sel ? document.querySelector(sel) : document.querySelector(".ib-list li.unread a, .ib-list li a"); el?.click(); }, 120); if (location.hash === "#/" + id) go(); else { location.hash = "#/" + id; go(); } });
   $("#collapse").onclick = () => root.classList.toggle("collapsed");
   $("#burger").onclick = () => { $("#side").classList.add("open"); $("#scrim").classList.add("on"); };
   $("#scrim").onclick = () => { $("#side").classList.remove("open"); $("#scrim").classList.remove("on"); };

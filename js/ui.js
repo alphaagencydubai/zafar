@@ -10,7 +10,7 @@ export const L = () => getLang();
 export const n2 = (i) => digits(String(i).padStart(2, "0"));
 export const zafar = () => (getLang() === "fa" ? "ظفر" : "Zafar");
 // brand words stay English inside Turkish text (otherwise CSS uppercase dots the i: CİRCLE)
-export const brandSafe = (s) => (getLang() === "tr" ? esc(s).replace(/(Zafar Circle|Circle|Continental)/g, '<span lang="en">$1</span>') : esc(s));
+export const brandSafe = (s) => (getLang() === "tr" ? esc(s).replace(/(Zafar Etebar|Etebar|Continental)/g, '<span lang="en">$1</span>') : esc(s));
 
 const I = (d, extra = "") => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"${extra}>${d}</svg>`;
 export const ICON = {

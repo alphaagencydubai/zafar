@@ -1,5 +1,5 @@
 // Home: the front door. Hero, the house rituals, four doors into the site, signature dishes,
-// three featured services, the Circle teaser and the letter.
+// three featured services, the Etebar teaser and the letter.
 import { t, getLang, pick, digits, kprice, honor } from "../i18n.js";
 import { MENU } from "../menu.js";
 import { SVC } from "../services.js";
@@ -19,10 +19,6 @@ function signatures() {
 export const title = () => (getLang() === "fa" ? "ظفر · رستوران قاره‌ای تبریز" : "Zafar Continental · Tabriz");
 
 export function html() {
-  const g = me();
-  const greet = g && g.name ? t(g.seen && Date.now() - g.seen > 6e4 ? "hero.back" : "hero.welcome", { name: honor(g) }) : "";
-  const h = new Date().getHours(), open = h >= 9;
-  const fa = getLang() === "fa";
   const doors = [
     ["#/menu", "s_6.6", "nav.menu", "door.menu", { n: digits(total()) }],
     ["#/services", "s_1.4", "nav.services", "door.services", { n: digits(13) }],
@@ -33,27 +29,10 @@ export function html() {
   const showP = get().settings.showPrices !== false;
   return `
   <section class="hero" data-tone="dark">
-    <div class="hero-amb" aria-hidden="true"><video class="amb" muted playsinline loop preload="auto" poster="assets/video/hero-poster.jpg"><source src="assets/video/hero.mp4" type="video/mp4"></video></div>
+    <div class="hero-bg" aria-hidden="true"><video class="hv" muted playsinline loop autoplay preload="auto" poster="assets/video/hero-poster.jpg"><source src="assets/video/hero.mp4" type="video/mp4"></video></div>
     <div class="hero-grain" aria-hidden="true"></div>
-    <div class="hero-in">
-      <div class="hero-copy">
-        <p class="eyebrow"><span class="dot"></span><span>${esc(t("hero.eyebrow"))}</span></p>
-        ${greet ? `<p class="greet">${esc(greet)}</p>` : ""}
-        <h1 class="hero-title"><span class="ht-fa">${fa ? "ظفر" : "Zafar"}</span><span class="ht-lat">${fa ? `<span lang="en">Zafar <em>Continental</em></span>` : `<em lang="en">Continental</em> · <span class="ht-f">ظفر</span>`}</span></h1>
-        <p class="hero-lead">${esc(t("hero.lead"))}</p>
-        <p class="hero-sub">${esc(t("hero.sub"))}</p>
-        <div class="hero-cta">
-          <button class="btn gold" type="button" data-letter="visit">${ICON.letter}<span>${esc(t("hero.cta"))}</span></button>
-          <a class="btn ghost" href="#/menu"><span>${esc(t("hero.menu"))}</span></a>
-        </div>
-        <div class="hero-meta"><span class="open-dot ${open ? "" : "off"}"></span><span>${esc(t(open ? "open.now" : "open.closed"))}</span><span class="sep"></span><span>${esc(t("open.hours"))}</span></div>
-      </div>
-      <figure class="hero-arch">
-        <div class="arch-frame"><video class="hv" muted playsinline loop autoplay preload="auto" poster="assets/video/hero-poster.jpg"><source src="assets/video/hero.mp4" type="video/mp4"></video></div>
-        <span class="arch-line" aria-hidden="true"></span>
-      </figure>
-    </div>
-    <button class="hero-scroll" type="button" data-scroll-next><span>${esc(t("hero.scroll"))}</span><i></i></button>
+    <h1 class="hero-c"><span class="hero-mark">${mark()}</span><span class="hero-word" lang="en">ZAFAR</span><span class="sr">Zafar Continental · Tabriz</span></h1>
+    <button class="hero-scroll" type="button" data-scroll-next aria-label="${esc(t("hero.scroll"))}"><i></i></button>
   </section>
 
   <section class="house sec" data-tone="dark">
@@ -121,7 +100,5 @@ export function mount(root) {
   tilt(root);
   root.querySelector("[data-scroll-next]")?.addEventListener("click", () => { const n = root.querySelector(".house"); scrollTo({ top: n.getBoundingClientRect().top + scrollY, behavior: "smooth" }); });
   const vids = [...root.querySelectorAll("video")];
-  const mobile = matchMedia("(max-width: 899px)").matches;
-  vids.forEach((v) => { v.muted = true; v.playsInline = true; if (mobile && v.classList.contains("hv")) return; const p = v.play(); p && p.catch(() => {}); });
-  const greet = root.querySelector(".greet"); if (greet) requestAnimationFrame(() => greet.classList.add("in"));
+  vids.forEach((v) => { v.muted = true; v.playsInline = true; const p = v.play(); p && p.catch(() => {}); });
 }

@@ -21,7 +21,7 @@ root.classList.add("boot-on");
 const lift = () => { boot.classList.add("out"); root.classList.remove("boot-on"); root.classList.add("ready"); setTimeout(() => boot.classList.add("gone"), 1400); };
 if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) { boot.classList.add("gone"); root.classList.remove("boot-on"); root.classList.add("ready"); }
 else { sessionStorage.setItem("zafar.boot", "1"); setTimeout(lift, 2600); }
-document.addEventListener("visibilitychange", () => { if (!document.hidden) $$("video", view).forEach((v) => { if (!(matchMedia("(max-width: 899px)").matches && v.classList.contains("hv"))) v.play()?.catch(() => {}); }); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) $$("video", view).forEach((v) => v.play()?.catch(() => {})); });
 
 // ———————————————————————— languages
 function paintLangs() {

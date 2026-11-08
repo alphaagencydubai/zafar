@@ -1,4 +1,4 @@
-/* Zafar Circle — the page an NFC tap opens */
+/* Zafar Etebar — the page an NFC tap opens */
 body.mem { background: radial-gradient(120% 60% at 50% 0%, #11404C 0%, #071E25 55%) fixed, #071E25; min-height: 100svh; }
 .mbar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: calc(12px + var(--safe-t)) max(16px, calc((100vw - 1100px) / 2)) 12px; background: rgba(7, 30, 37, .5); -webkit-backdrop-filter: var(--blur) brightness(.8); backdrop-filter: var(--blur) brightness(.8); box-shadow: 0 1px 0 rgba(235, 211, 162, .1); }
 .mb-brand { display: flex; align-items: center; gap: 12px; color: var(--gold-hi); }

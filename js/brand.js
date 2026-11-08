@@ -10,7 +10,7 @@ export function card({ tier = "noir", name = "KAMRAN RASOULI", id = "ZC-1001", s
   return `<div class="zcard tier-${tier} ${cls}" data-tilt>
     <div class="zc-face">
       <div class="zc-brush"></div><div class="zc-glare"></div>
-      <div class="zc-top">${mark("zc-mark")}<span class="zc-brand">ZAFAR<small>CIRCLE</small></span>${NFC}</div>
+      <div class="zc-top">${mark("zc-mark")}<span class="zc-brand">ZAFAR<small>ETEBAR</small></span>${NFC}</div>
       <div class="zc-chip"><i></i><i></i><i></i></div>
       <div class="zc-num">${id.replace("-", " ")} &nbsp;·&nbsp; ${String(tier).toUpperCase()}</div>
       <div class="zc-bottom"><div><small>MEMBER</small><b>${name.toUpperCase()}</b></div><div><small>SINCE</small><b>${mmYY}</b></div></div>

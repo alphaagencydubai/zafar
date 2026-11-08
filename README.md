@@ -1,9 +1,9 @@
-# Zafar Continental — website, Circle page and CEO panel (demo)
+# Zafar Continental — website, Etebar page and CEO panel (demo)
 
 Alpha Agency built this preview for Zafar Continental, a restaurant in Tabriz (Instagram `@zafar_continental`).
 
 - Site: `index.html`, in Persian, Turkish and English
-- Zafar Circle member page (opened by tapping the NFC card): `member.html`, with demo cards for ZC-1001, a Gold member and a Teal member
+- Zafar Etebar member page (opened by tapping the NFC card): `member.html`, with demo cards for ZC-1001, a Gold member and a Teal member
 - CEO panel (پنل مدیرعامل): `admin.html`, demo PIN `1234`
 
 ## Pages
@@ -11,12 +11,12 @@ Each page is its own route (hash routes, so it runs on GitHub Pages), with a cro
 `#/` home · `#/menu` (and `#/menu/breakfast`, `#/menu/cafe`) · `#/services` · `#/services/<id>` for each of the 13 services (plus `#/services/visit`) · `#/circle` · `#/account` · `#/occasions` · `#/visit` · `#/login`.
 - Every service page has an intro, what is included, good to know, lead time, party size, where, payment, which Zafar Account cards can carry it, related services and previous/next. The chauffeur page includes the route widget.
 - The Account page shows the card for each tier (Teal, Gold, Noir) and where it works: account limit, limit per signature, companion cards, settlement, and 11 usage situations, plus a comparison table. The rules live in `js/cards.js`; the member page shows the member's own card rules, and the CEO panel enforces them when a signature is posted.
-- `#/login` is the private door: a PIN pad for Zafar's team (opens the CEO panel) and the NFC tap for Circle members.
+- `#/login` is the private door: a PIN pad for Zafar's team (opens the CEO panel) and the NFC tap for Etebar members.
 - Links from the old one-page site (`#menu`, `#chauffeur` …) still land on the right page.
 
 ## What is in it
 - Hero: Zafar's own video inside an arch frame (the arches in their dining room), with an ambient blurred copy behind it. On phones the video fills the screen.
-- Glass navigation (iOS style). On desktop it is a top capsule; on phones it is a thumb bar. Six tabs (Home, Menu, Services, Circle, Account, Visit) plus the letter button and a lock for sign-in. A lens sits under the current page, and the bar folds as you scroll down and opens as you scroll up.
+- Glass navigation (iOS style). On desktop it is a top capsule; on phones it is a thumb bar. Six tabs (Home, Menu, Services, Etebar, Account, Visit) plus the letter button and a lock for sign-in. A lens sits under the current page, and the bar folds as you scroll down and opens as you scroll up.
 - The menu is Zafar's real Continental menu from منو.net/zafar (Restaurant, Breakfast, Café; 178 items; prices in thousand toman).
 - The ideas they chose from Alpha's idea book:
   - 5: letters instead of forms
@@ -31,7 +31,7 @@ Each page is its own route (hash routes, so it runs on GitHub Pages), with a cro
   - 19: business dinners
   - 21: gift box
   - 22: give an evening
-  - 26: Zafar Circle
+  - 26: Zafar Etebar
   - 27: metal NFC card
   - 29: occasion keeper
   - 30: guest notes
@@ -42,7 +42,7 @@ Each page is its own route (hash routes, so it runs on GitHub Pages), with a cro
   - 88 plus anywhere-to-Zafar and Zafar-to-anywhere: private driver
   - bespoke dish
 - No online payment and no online reservation anywhere, by Zafar's choice. Every request becomes a letter, and the host calls.
-- CEO panel, 22 sections: dashboard, tonight / door view, letters, guest files, Circle and NFC cards, occasions and anniversaries, accounts, signatures and settlements, statements (print), receivables, Zafar at home, ceremonies and buyouts calendar, driver dispatch, gifts, bespoke dishes, menu and prices (live on the site), sales, P&L, staff and shifts, reports and CSV, access and audit log, settings. It also has a ⌘K palette, alerts, light/dark mode and a PIN lock.
+- CEO panel, 22 sections: dashboard, tonight / door view, letters, guest files, Etebar and NFC cards, occasions and anniversaries, accounts, signatures and settlements, statements (print), receivables, Zafar at home, ceremonies and buyouts calendar, driver dispatch, gifts, bespoke dishes, menu and prices (live on the site), sales, P&L, staff and shifts, reports and CSV, access and audit log, settings. It also has a ⌘K palette, alerts, light/dark mode and a PIN lock.
 
 Site ↔ panel sync is live on one device (localStorage + BroadcastChannel in `js/data.js`). A real server replaces that file for production. Panel history is seeded demo data.
 

@@ -1,7 +1,7 @@
 // One store shared by the site, the member page and the CEO panel. On one device
 // they talk instantly (localStorage + BroadcastChannel); a real server would
 // replace this file in production. Demo history is seeded once, deterministically.
-const KEY = "zafar.data.v5";
+const KEY = "zafar.data.v6";
 const DAY = 864e5;
 const chan = "BroadcastChannel" in window ? new BroadcastChannel("zafar") : null;
 const subs = new Set();
@@ -84,7 +84,7 @@ function seed() {
   const members = loyal.map((g, i) => {
     const since = now - (60 + Math.floor(r() * 900)) * DAY;
     const tier = tiers[i];
-    g.memberId = `ZC-${1001 + i}`; g.tags.unshift("حلقه");
+    g.memberId = `ZC-${1001 + i}`; g.tags.unshift("اعتبار");
     return { id: g.memberId, guestId: g.id, tier, since, host: hosts[i % hosts.length].id,
       card: { uid: `04:${Array.from({ length: 6 }, () => Math.floor(r() * 256).toString(16).padStart(2, "0").toUpperCase()).join(":")}`, issued: since + 3 * DAY, status: "active", taps: 4 + Math.floor(r() * 80) },
       limit: tier === "noir" ? null : tier === "gold" ? 800e6 : 300e6,
@@ -169,6 +169,6 @@ function seed() {
   const demoG = guests.find((g) => g.id === members[0].guestId);
   [1, 9, 16, 24].forEach((i, k) => Object.assign(requests[i], { guestId: demoG.id, memberId: members[0].id, title: "m", name: demoG.name, phone: demoG.phone, type: ["chauffeur", "bespoke", "home", "visit"][k] }));
   occasions.push({ id: "O-90", guestId: demoG.id, memberId: members[0].id, type: "occ.anniv", whose: "ازدواج", date: T0 + 12 * DAY, call: "scheduled" });
-  return { v: 5, seededAt: now, staff, guests, members, tx, requests, occasions, trips, tonight, days, menu: {}, settings: { showPrices: true, callSla: 4, autoReply: "", letterLangs: ["fa", "tr", "en"], pin: "1234" }, audit: [{ ts: now - 36e5, by: "M-1", text: "پنل راه‌اندازی شد" }] };
+  return { v: 6, seededAt: now, staff, guests, members, tx, requests, occasions, trips, tonight, days, menu: {}, settings: { showPrices: true, callSla: 4, autoReply: "", letterLangs: ["fa", "tr", "en"], pin: "1234" }, audit: [{ ts: now - 36e5, by: "M-1", text: "پنل راه‌اندازی شد" }] };
 }
 export { DAY };

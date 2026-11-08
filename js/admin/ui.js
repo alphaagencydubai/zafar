@@ -11,7 +11,7 @@ export const memberOf = (g) => (g && g.memberId ? member(g.memberId) : null);
 export const honorFa = (g) => (g ? `${g.title === "f" ? "خانم" : "آقای"} ${g.name}` : "");
 export const ROLES = { host: "میزبان", chef: "سرآشپز", driver: "راننده", maitre: "سرپیشخدمت", waiter: "پیشخدمت", pastry: "شیرینی‌پز", barista: "باریستا", manager: "مدیر سالن" };
 export const TIER = { teal: "فیروزه", gold: "طلایی", noir: "نوآر" };
-export const TYPE = { visit: "دیدار با ظفر", home: "سرو VIP در منزل", chef: "سرآشپز مقیم", delivery: "تحویل دستی", protocol: "تشریفات میز", ceremony: "خواستگاری / بله‌برون / عقد", proposal: "درخواست ازدواج", birthday: "تولد غافلگیرانه", business: "شام کاری و هیئت", buyout: "اجاره‌ی کامل ظفر", giftbox: "جعبه‌ی هدیه", evening: "هدیه‌ی یک شب", chauffeur: "راننده‌ی اختصاصی", bespoke: "غذای اختصاصی", circle: "معرفی به حلقه", occasion: "سپردن مناسبت" };
+export const TYPE = { visit: "دیدار با ظفر", home: "سرو VIP در منزل", chef: "سرآشپز مقیم", delivery: "تحویل دستی", protocol: "تشریفات میز", ceremony: "خواستگاری / بله‌برون / عقد", proposal: "درخواست ازدواج", birthday: "تولد غافلگیرانه", business: "شام کاری و هیئت", buyout: "اجاره‌ی کامل ظفر", giftbox: "جعبه‌ی هدیه", evening: "هدیه‌ی یک شب", chauffeur: "راننده‌ی اختصاصی", bespoke: "غذای اختصاصی", circle: "معرفی به اعتبار", occasion: "سپردن مناسبت" };
 export const STATUS = { new: ["نامه‌ی تازه", "gold"], called: ["تماس گرفته شد", "blue"], confirmed: ["تأیید شد", "green"], done: ["انجام شد", "mute"], declined: ["ممکن نشد", "red"] };
 export const CAT = { dining: "پذیرایی", home: "سرو در منزل", chauffeur: "راننده", gift: "هدیه", event: "مراسم", bespoke: "غذای اختصاصی", settle: "تسویه" };
 export const METHOD = { pos: "کارتخوان", cash: "نقد", transfer: "حواله" };

@@ -87,7 +87,7 @@ export function detailHtml(id) {
         <p class="kicker">${esc(grp ? t("grp." + grp) : t("svc.k"))}</p>
         <h1 class="h1">${esc(pick(s.t))}</h1>
         <p class="lede">${esc(pick(d.intro))}</p>
-        <div class="ph-act"><button class="btn gold" type="button" data-letter="${id}">${ICON.letter}<span>${esc(t("svc.req"))}</span></button><a class="btn ghost" href="tel:+984136661616">${ICON.phone}<span>${esc(t("vis.call"))}</span></a></div>
+        <div class="ph-act"><button class="btn gold" type="button" data-letter="${id}" data-preset>${ICON.letter}<span>${esc(t("svc.req"))}</span></button><a class="btn ghost" href="tel:+984136661616">${ICON.phone}<span>${esc(t("vis.call"))}</span></a></div>
       </div>
       <figure class="sd-arch"><img src="assets/img/${s.img}.webp" alt=""><span class="arch-line" aria-hidden="true"></span>${s.n ? `<figcaption>${esc(t("sd.idea"))} <span class="lat">${digits(s.n)}</span></figcaption>` : ""}</figure>
     </div>

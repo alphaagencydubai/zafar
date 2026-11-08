@@ -1,4 +1,4 @@
-// Overview + guests: dashboard, tonight (welcome by name), letters, guest files, Circle, occasions.
+// Overview + guests: dashboard, tonight (welcome by name), letters, guest files, Etebar, occasions.
 import { esc, fa, n, m, T, pct, d1, date, dateY, dshort, wday, time, dt, ago, until, sum, kpi, delta, card, pill, empty, btn, meter, avatar, table, lines, hbars, donut, vbars, startOfDay, DAY } from "./kit.js";
 import { $, $$, db, guest, member, staff, memberOf, honorFa, TIER, TYPE, STATUS, LBL, lbl, OCC, balance, commit, drawer, closeDrawer, modal, toast, opt, field, ROLES } from "./ui.js";
 import { MENU } from "../menu.js";
@@ -33,7 +33,7 @@ function dash(el) {
     ${kpi("درآمد ۳۰ روز", T(r30), "همه‌ی خطوط خدمت", delta(r30, p30))}
     ${kpi("نامه‌های تازه", fa(newL.length), `${fa(newL.filter((r) => now - r.ts > (d.settings.callSla || 4) * 36e5).length)} نفر منتظر بیش از حد`, "", newL.length ? "hot" : "")}
     ${kpi("مهمانان امشب", fa(ton.length), `${fa(sum(ton, (x) => x.party))} نفر · ${fa(ton.filter((x) => x.status === "arrived" || x.status === "seated").length)} رسیده‌اند`)}
-    ${kpi("حساب ظفر · مانده", T(ar), `${fa(d.members.length)} عضو حلقه`)}
+    ${kpi("حساب ظفر · مانده", T(ar), `${fa(d.members.length)} عضو اعتبار ظفر`)}
     ${kpi("سفرهای امروز", fa(trips.length), `${fa(trips.filter((t) => t.status === "onboard").length)} در راه`)}
   </div>
   <div class="grid g-2-1">
@@ -53,7 +53,7 @@ function tonight(el) {
   const d = db(); const door = el.dataset.door === "1";
   const list = [...d.tonight].sort((a, b) => a.ts - b.ts);
   el.innerHTML = `<div class="bar-row"><div class="seg-a">${btn("فهرست", `data-door="0" aria-pressed="${!door}"`)}${btn("نمای در ورودی", `data-door="1" aria-pressed="${door}"`)}</div><span class="muted">${fa(list.length)} میهمانی · ${fa(sum(list, (x) => x.party))} نفر · میزبان دم در هر مهمان را با نام خوشامد می‌گوید</span>${btn("+ مهمان امشب", 'data-act="add-tonight"', "gold")}</div>
-  ${door ? `<div class="door">${list.filter((a) => a.status === "expected" || a.status === "arrived").map((a) => { const g = guest(a.guestId), mm = memberOf(g); return `<article class="door-c ${a.status}"><small>${time(a.ts)} · ${esc(a.table)} · ${fa(a.party)} نفر</small><h2>خوش آمدید، ${esc(honorFa(g))}</h2>${mm ? `<p>${tierPill(mm.tier)} عضو حلقه · میزبان: ${esc(staff(mm.host).name)}</p>` : ""}<ul>${g.prefs.tea ? `<li>نوشیدنی همیشگی: ${esc(g.prefs.tea)}</li>` : ""}${a.note ? `<li class="warn">${esc(a.note)}</li>` : ""}${a.occasion ? `<li class="gold">امشب: ${esc(a.occasion)}</li>` : ""}${g.family.length ? `<li>همراه: ${esc(g.family.map((f) => f.name).join("، "))}</li>` : ""}</ul><div class="row">${a.status === "expected" ? btn("رسید", `data-ast="arrived" data-id="${a.id}"`, "gold") : btn("سر میز نشست", `data-ast="seated" data-id="${a.id}"`, "gold")}</div></article>`; }).join("") || empty("همه‌ی مهمانان امشب رسیده‌اند.")}</div>`
+  ${door ? `<div class="door">${list.filter((a) => a.status === "expected" || a.status === "arrived").map((a) => { const g = guest(a.guestId), mm = memberOf(g); return `<article class="door-c ${a.status}"><small>${time(a.ts)} · ${esc(a.table)} · ${fa(a.party)} نفر</small><h2>خوش آمدید، ${esc(honorFa(g))}</h2>${mm ? `<p>${tierPill(mm.tier)} عضو اعتبار ظفر · میزبان: ${esc(staff(mm.host).name)}</p>` : ""}<ul>${g.prefs.tea ? `<li>نوشیدنی همیشگی: ${esc(g.prefs.tea)}</li>` : ""}${a.note ? `<li class="warn">${esc(a.note)}</li>` : ""}${a.occasion ? `<li class="gold">امشب: ${esc(a.occasion)}</li>` : ""}${g.family.length ? `<li>همراه: ${esc(g.family.map((f) => f.name).join("، "))}</li>` : ""}</ul><div class="row">${a.status === "expected" ? btn("رسید", `data-ast="arrived" data-id="${a.id}"`, "gold") : btn("سر میز نشست", `data-ast="seated" data-id="${a.id}"`, "gold")}</div></article>`; }).join("") || empty("همه‌ی مهمانان امشب رسیده‌اند.")}</div>`
   : card("فهرست امشب", table(["ساعت", "مهمان", "نفر", "میز", "یادداشت", "وضعیت", ""], list.map((a) => { const g = guest(a.guestId), mm = memberOf(g); return [{ v: time(a.ts), s: a.ts }, `<a class="who" href="#/guests/${g.id}">${avatar(g.name, mm ? "gold" : "")}<span><b>${esc(honorFa(g))}</b><small>${mm ? TIER[mm.tier] + " · " : ""}${esc(g.prefs.tea || "")}</small></span></a>`, fa(a.party), esc(a.table), `${a.occasion ? pill(esc(a.occasion), "gold") : ""} ${esc(a.note)}`, pill(AST[a.status][0], AST[a.status][1]), `<div class="row">${["arrived", "seated", "left"].map((s) => btn(AST[s][0].split(" ·")[0], `data-ast="${s}" data-id="${a.id}"`, a.status === s ? "on" : "sm")).join("")}</div>`]; })))}`;
   el.onclick = (e) => {
     const b = e.target.closest("button[data-door]"); if (b) { el.dataset.door = b.dataset.door; tonight(el); return; }
@@ -73,6 +73,7 @@ function inbox(el, arg) {
   const d = db(); const f = el._f || (el._f = { st: "open", type: "", q: "" });
   const list = d.requests.filter((r) => (f.st === "open" ? ["new", "called"].includes(r.status) : f.st === "all" ? true : r.status === f.st) && (!f.type || r.type === f.type) && (!f.q || `${r.name} ${r.phone} ${r.id} ${r.note}`.includes(f.q)));
   const cnt = (s) => d.requests.filter((r) => (s === "open" ? ["new", "called"].includes(r.status) : s === "all" ? 1 : r.status === s)).length;
+  if (!arg && list[0] && innerWidth >= 900) arg = list[0].id;
   el.innerHTML = `<div class="bar-row"><div class="seg-a">${[["open", "باز"], ["new", "تازه"], ["called", "تماس گرفته شد"], ["confirmed", "تأیید شد"], ["done", "انجام شد"], ["declined", "ممکن نشد"], ["all", "همه"]].map(([v, l]) => btn(`${l} <small>${fa(cnt(v))}</small>`, `data-st="${v}" aria-pressed="${f.st === v}"`)).join("")}</div>
     <select class="sel" data-ftype><option value="">همه‌ی موضوع‌ها</option>${opt(Object.entries(TYPE), f.type)}</select><input class="sel" data-q placeholder="نام، شماره، کد نامه…" value="${esc(f.q)}"></div>
   <div class="inbox"><ul class="ib-list">${list.map((r) => `<li class="${arg === r.id ? "on" : ""} ${r.status === "new" ? "unread" : ""}"><a href="#/inbox/${r.id}">${avatar(r.name, r.memberId ? "gold" : "")}<div><b>${esc(honorFa(r))}</b><small>${esc(TYPE[r.type])}</small><small class="lat">${r.id} · ${ago(r.ts)}${r.lang !== "fa" ? " · " + r.lang.toUpperCase() : ""}</small></div>${statusPill(r.status)}</a></li>`).join("") || `<li>${empty("نامه‌ای نیست.")}</li>`}</ul>
@@ -104,7 +105,7 @@ function letterView(r) {
     <p>لطفاً با شماره‌ی <a class="lat" href="tel:${esc(r.phone)}">${esc(fa(r.phone))}</a> تماس بگیرید؛ بهترین زمان تماس، <b>${lbl(r.callTime)}</b> است.</p>
     ${r.note ? `<blockquote>${esc(r.note)}</blockquote>` : ""}
     <p class="pp-s">ارادتمند، <span>${esc(honorFa(r))}</span></p>
-    <div class="pp-meta">${r.heard ? pill("آشنایی: " + lbl(r.heard), "mute") : ""}${r.lang && r.lang !== "fa" ? pill("نوشته به " + ({ tr: "ترکی استانبولی", en: "انگلیسی" }[r.lang] || r.lang), "blue") : ""}${mm ? pill("عضو حلقه · " + TIER[mm.tier], "tier-" + mm.tier) : ""}${g ? `<a class="pill mute" href="#/guests/${g.id}">پرونده‌ی مهمان ›</a>` : ""}${waited ? pill("منتظر از " + waited, "red") : ""}</div>
+    <div class="pp-meta">${r.heard ? pill("آشنایی: " + lbl(r.heard), "mute") : ""}${r.lang && r.lang !== "fa" ? pill("نوشته به " + ({ tr: "ترکی استانبولی", en: "انگلیسی" }[r.lang] || r.lang), "blue") : ""}${mm ? pill("عضو اعتبار ظفر · " + TIER[mm.tier], "tier-" + mm.tier) : ""}${g ? `<a class="pill mute" href="#/guests/${g.id}">پرونده‌ی مهمان ›</a>` : ""}${waited ? pill("منتظر از " + waited, "red") : ""}</div>
   </article>
   <div class="ib-acts">
     ${field("میزبان مسئول", `<select data-host="${r.id}">${opt([["", "—"], ...hosts().map((h) => [h.id, h.name])], r.host)}</select>`)}
@@ -133,13 +134,13 @@ function letterAct(a, id) {
 document.addEventListener("change", (e) => { const s = e.target.closest("[data-host]"); if (!s) return; const r = db().requests.find((x) => x.id === s.dataset.host); r.host = s.value; r.log.push({ ts: Date.now(), by: "M-1", text: `واگذار به ${staff(s.value)?.name}` }); commit("M-1", `نامه‌ی ${r.name} به ${staff(s.value)?.name} سپرده شد`); });
 
 // ———————————————————————— guest files (idea 30)
-const SEGS = [["all", "همه"], ["circle", "حلقه"], ["همیشگی", "همیشگی"], ["آشنا", "آشنا"], ["تازه", "تازه"], ["خانوادگی", "خانوادگی"], ["کاری", "کاری"], ["allergy", "حساسیت غذایی"], ["quiet", "۶۰+ روز نیامده"]];
+const SEGS = [["all", "همه"], ["circle", "اعتبار"], ["همیشگی", "همیشگی"], ["آشنا", "آشنا"], ["تازه", "تازه"], ["خانوادگی", "خانوادگی"], ["کاری", "کاری"], ["allergy", "حساسیت غذایی"], ["quiet", "۶۰+ روز نیامده"]];
 function guests(el, arg) {
   const d = db(); const f = el._f || (el._f = { seg: "all", q: "" });
   const match = (g) => (f.seg === "all" || (f.seg === "circle" ? g.memberId : f.seg === "allergy" ? g.prefs.allergy : f.seg === "quiet" ? Date.now() - (g.last || 0) > 60 * DAY : g.tags.includes(f.seg))) && (!f.q || `${g.name} ${g.nameLat} ${g.phone} ${g.id}`.toLowerCase().includes(f.q.toLowerCase()));
   const list = d.guests.filter(match);
   el.innerHTML = `<div class="bar-row"><div class="seg-a">${SEGS.map(([v, l]) => btn(l, `data-seg="${v}" aria-pressed="${f.seg === v}"`)).join("")}</div><input class="sel" data-q placeholder="جست‌وجوی نام، شماره، کد…" value="${esc(f.q)}">${btn("+ مهمان", 'data-act="new-guest"', "gold")}</div>
-  ${card(`${fa(list.length)} پرونده`, table(["مهمان", "تماس", "برچسب", "میز و نوشیدنی", "حساسیت", { l: "دفعات" }, { l: "خرید ۱۲ ماه" }, "آخرین دیدار"], list.map((g) => { const mm = memberOf(g); return [`<a class="who" href="#/guests/${g.id}">${avatar(g.name, mm ? "gold" : "")}<span><b>${esc(honorFa(g))}</b><small class="lat">${g.id}${mm ? " · " + mm.id : ""}</small></span></a>`, `<span class="lat">${fa(g.phone)}</span>`, g.tags.map((t) => pill(t, t === "حلقه" ? "gold" : "mute")).join(" "), `<small>${esc(g.prefs.table)}<br>${esc(g.prefs.tea)}</small>`, g.prefs.allergy ? pill(esc(g.prefs.allergy), "red") : "", { v: fa(g.visits), s: g.visits }, { v: T(g.spend), s: g.spend }, { v: g.last ? ago(g.last) : "—", s: g.last || 0 }]; })))}`;
+  ${card(`${fa(list.length)} پرونده`, table(["مهمان", "تماس", "برچسب", "میز و نوشیدنی", "حساسیت", { l: "دفعات" }, { l: "خرید ۱۲ ماه" }, "آخرین دیدار"], list.map((g) => { const mm = memberOf(g); return [`<a class="who" href="#/guests/${g.id}">${avatar(g.name, mm ? "gold" : "")}<span><b>${esc(honorFa(g))}</b><small class="lat">${g.id}${mm ? " · " + mm.id : ""}</small></span></a>`, `<span class="lat">${fa(g.phone)}</span>`, g.tags.map((t) => pill(t, t === "اعتبار" ? "gold" : "mute")).join(" "), `<small>${esc(g.prefs.table)}<br>${esc(g.prefs.tea)}</small>`, g.prefs.allergy ? pill(esc(g.prefs.allergy), "red") : "", { v: fa(g.visits), s: g.visits }, { v: T(g.spend), s: g.spend }, { v: g.last ? ago(g.last) : "—", s: g.last || 0 }]; })))}`;
   el.onclick = (e) => { const s = e.target.closest("[data-seg]"); if (s) { f.seg = s.dataset.seg; guests(el); } if (e.target.closest('[data-act="new-guest"]')) newGuest(); };
   el.querySelector("[data-q]").oninput = (e) => { f.q = e.target.value; clearTimeout(el._qt); el._qt = setTimeout(() => { guests(el); const q = el.querySelector("[data-q]"); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }, 250); };
   if (arg) guestDrawer(arg);
@@ -153,14 +154,14 @@ export function guestDrawer(id) {
   const reqs = d.requests.filter((r) => r.guestId === g.id);
   const occ = d.occasions.filter((o) => o.guestId === g.id);
   const trips = d.trips.filter((t) => t.guestId === g.id);
-  drawer(`<div class="dw-h">${avatar(g.name, mm ? "gold big" : "big")}<div><h2>${esc(honorFa(g))}</h2><p class="lat">${esc(g.nameLat || "")} · ${g.id}</p><div class="row">${g.tags.map((t) => pill(t, t === "حلقه" ? "gold" : "mute")).join("")}${mm ? tierPill(mm.tier) : ""}</div></div><button class="x" data-dclose>×</button></div>
+  drawer(`<div class="dw-h">${avatar(g.name, mm ? "gold big" : "big")}<div><h2>${esc(honorFa(g))}</h2><p class="lat">${esc(g.nameLat || "")} · ${g.id}</p><div class="row">${g.tags.map((t) => pill(t, t === "اعتبار" ? "gold" : "mute")).join("")}${mm ? tierPill(mm.tier) : ""}</div></div><button class="x" data-dclose>×</button></div>
     <div class="kpis sm">${kpi("دفعات", fa(g.visits))}${kpi("خرید ۱۲ ماه", T(g.spend))}${kpi("میانگین هر دیدار", T(g.visits ? g.spend / g.visits : 0))}${kpi("آخرین دیدار", g.last ? ago(g.last) : "—")}</div>
     <div class="dw-sec"><h4>آنچه ظفر به خاطر دارد</h4><form class="prefs-f" data-g="${g.id}">
       ${field("میز محبوب", `<input name="table" value="${esc(g.prefs.table || "")}">`)}${field("نوشیدنی همیشگی", `<input name="tea" value="${esc(g.prefs.tea || "")}">`)}${field("حساسیت / رژیم", `<input name="allergy" value="${esc(g.prefs.allergy || "")}">`)}${field("موسیقی", `<input name="music" value="${esc(g.prefs.music || "")}">`)}${field("نکته برای میزبان", `<input name="note" value="${esc(g.prefs.note || "")}">`)}
       ${g.prefs.guestNote ? `<p class="hint">مهمان از صفحه‌ی NFC نوشته: «${esc(g.prefs.guestNote)}»</p>` : ""}
       ${field("یادداشت داخلی", `<textarea name="notes" rows="2">${esc(g.notes || "")}</textarea>`)}<button class="b gold" type="submit">ذخیره</button></form></div>
     <div class="dw-sec"><h4>تماس و خانواده</h4><dl class="dl"><div><dt>موبایل</dt><dd><a class="lat" href="tel:${g.phone}">${fa(g.phone)}</a></dd></div><div><dt>آشنایی</dt><dd>${lbl(g.heard || "") || "—"}</dd></div><div><dt>تولد</dt><dd>${g.birthday ? `${fa(g.birthday.d)} ${["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"][g.birthday.m - 1]}` : "—"}</dd></div><div><dt>همراهان</dt><dd>${g.family.map((f) => `${esc(f.name)} (${esc(f.rel)})`).join("، ") || "—"}</dd></div><div><dt>نخستین دیدار</dt><dd>${g.first ? dateY(g.first) : "—"}</dd></div></dl></div>
-    ${mm ? `<div class="dw-sec"><h4>حلقه و حساب ظفر</h4><dl class="dl"><div><dt>عضویت</dt><dd>${TIER[mm.tier]} · از ${dateY(mm.since)}</dd></div><div><dt>میزبان</dt><dd>${esc(staff(mm.host).name)}</dd></div><div><dt>مانده‌ی دوره</dt><dd>${T(b.bal)}${mm.limit ? ` از ${T(mm.limit)}` : " · بدون سقف"}</dd></div><div><dt>کارت NFC</dt><dd class="lat">${mm.card.uid} · ${fa(mm.card.taps)} لمس</dd></div></dl><div class="row"><a class="b" href="#/accounts/${mm.id}">حساب ›</a><a class="b" href="member.html?c=${mm.id}" target="_blank">صفحه‌ی NFC ↗</a></div></div>` : `<div class="dw-sec"><div class="row">${btn("دعوت به حلقه‌ی ظفر", `data-invite="${g.id}"`, "gold")}</div></div>`}
+    ${mm ? `<div class="dw-sec"><h4>اعتبار و حساب ظفر</h4><dl class="dl"><div><dt>عضویت</dt><dd>${TIER[mm.tier]} · از ${dateY(mm.since)}</dd></div><div><dt>میزبان</dt><dd>${esc(staff(mm.host).name)}</dd></div><div><dt>مانده‌ی دوره</dt><dd>${T(b.bal)}${mm.limit ? ` از ${T(mm.limit)}` : " · بدون سقف"}</dd></div><div><dt>کارت NFC</dt><dd class="lat">${mm.card.uid} · ${fa(mm.card.taps)} لمس</dd></div></dl><div class="row"><a class="b" href="#/accounts/${mm.id}">حساب ›</a><a class="b" href="member.html?c=${mm.id}" target="_blank">صفحه‌ی NFC ↗</a></div></div>` : `<div class="dw-sec"><div class="row">${btn("دعوت به اعتبار ظفر", `data-invite="${g.id}"`, "gold")}</div></div>`}
     <div class="dw-sec"><h4>مناسبت‌ها</h4>${occ.length ? `<ul class="list sm">${occ.map((o) => `<li><div><b>${OCC[o.type]}${o.whose ? " · " + esc(o.whose) : ""}</b><small>${date(o.date)} · تماس ${until(o.date - 7 * DAY)}</small></div>${pill(o.call === "done" ? "تماس انجام شد" : o.call === "due" ? "امروز تماس" : "برنامه‌ریزی شده", o.call === "due" ? "red" : "mute")}</li>`).join("")}</ul>` : empty("—")}<div class="row">${btn("+ مناسبت", `data-addocc="${g.id}"`)}</div></div>
     <div class="dw-sec"><h4>نامه‌ها و سفرها</h4><ul class="list sm">${reqs.map((r) => `<li><a href="#/inbox/${r.id}"><div><b>${TYPE[r.type]}</b><small class="lat">${r.id} · ${ago(r.ts)}</small></div>${statusPill(r.status)}</a></li>`).join("")}${trips.map((t) => `<li><div><b>راننده · ${esc(t.from)} ← ${esc(t.to)}</b><small>${dt(t.ts)}</small></div>${pill(lbl(t.dir), "mute")}</li>`).join("")}</ul></div>`, { wide: true });
   const fm = $(".prefs-f");
@@ -173,12 +174,12 @@ document.addEventListener("click", (e) => {
 });
 export function inviteCircle(gid) {
   const d = db(), g = guest(gid);
-  modal(`دعوت ${esc(honorFa(g))} به حلقه`, `<div class="ff2">${field("سطح", `<select name="t">${opt([["teal", "فیروزه"], ["gold", "طلایی"], ["noir", "نوآر"]])}</select>`)}${field("میزبان شخصی", `<select name="h">${opt(hosts().map((h) => [h.id, h.name]))}</select>`)}</div>${field("سقف حساب (تومان)", `<input name="l" dir="ltr" value="300000000">`)}<p class="hint">کارت فلزی NFC صادر می‌شود و نشانی صفحه‌ی خصوصی روی تراشه نوشته می‌شود.</p>`, {
+  modal(`دعوت ${esc(honorFa(g))} به اعتبار`, `<div class="ff2">${field("سطح", `<select name="t">${opt([["teal", "فیروزه"], ["gold", "طلایی"], ["noir", "نوآر"]])}</select>`)}${field("میزبان شخصی", `<select name="h">${opt(hosts().map((h) => [h.id, h.name]))}</select>`)}</div>${field("سقف حساب (تومان)", `<input name="l" dir="ltr" value="300000000">`)}<p class="hint">کارت فلزی NFC صادر می‌شود و نشانی صفحه‌ی خصوصی روی تراشه نوشته می‌شود.</p>`, {
     ok: "صدور کارت", onOk: (f) => {
       const id = `ZC-${1001 + d.members.length}`;
       const uid = "04:" + Array.from({ length: 6 }, () => Math.floor(Math.random() * 256).toString(16).padStart(2, "0").toUpperCase()).join(":");
       d.members.push({ id, guestId: g.id, tier: f.t.value, since: Date.now(), host: f.h.value, card: { uid, issued: Date.now(), status: "active", taps: 0 }, limit: f.t.value === "noir" ? null : +f.l.value || 3e8, supp: [] });
-      g.memberId = id; g.tags.unshift("حلقه"); commit("M-1", `${g.name} عضو حلقه شد (${TIER[f.t.value]})`); writeCard(id);
+      g.memberId = id; g.tags.unshift("اعتبار"); commit("M-1", `${g.name} عضو اعتبار ظفر شد (${TIER[f.t.value]})`); writeCard(id);
     } });
 }
 export function writeCard(id) {
@@ -186,18 +187,18 @@ export function writeCard(id) {
   modal("نوشتن روی کارت NFC", `<div class="nfcw"><div class="nfc-anim"><i></i><i></i><i></i></div><p>کارت فلزی <b>${esc(g.name)}</b> را روی دستگاه بگذارید…</p><code class="lat">${esc(url)}</code><p class="hint">UID: <span class="lat">${mm.card.uid}</span> · در نسخه‌ی واقعی، این نشانی با یک کلید یک‌بارمصرف روی تراشه‌ی NTAG424 نوشته می‌شود.</p><a class="b gold" href="${esc(url)}" target="_blank">باز کردن صفحه‌ی عضو ↗</a></div>`, {});
 }
 
-// ———————————————————————— Zafar Circle (26, 27, 32)
+// ———————————————————————— Zafar Etebar (26, 27, 32)
 function circle(el) {
   const d = db(), now = Date.now();
   const by = (t) => d.members.filter((x) => x.tier === t).length;
   const pendingInv = d.requests.filter((r) => r.type === "circle" && ["new", "called"].includes(r.status));
   el.innerHTML = `<div class="kpis">${kpi("اعضا", fa(d.members.length))}${kpi("نوآر", fa(by("noir")))}${kpi("طلایی", fa(by("gold")))}${kpi("فیروزه", fa(by("teal")))}${kpi("لمس کارت ۳۰ روز", fa(sum(d.members, (x) => x.card.taps)))}${kpi("درخواست معرفی", fa(pendingInv.length), "", "", pendingInv.length ? "hot" : "")}</div>
-  ${card("اعضای حلقه", table(["عضو", "سطح", "میزبان", "عضو از", "کارت NFC", { l: "مانده‌ی دوره" }, "سقف", ""], d.members.map((x) => { const g = guest(x.guestId), b = balance(x.id); return [`<a class="who" href="#/guests/${g.id}">${avatar(g.name, "gold")}<span><b>${esc(honorFa(g))}</b><small class="lat">${x.id}</small></span></a>`, tierPill(x.tier), esc(staff(x.host).name), { v: dateY(x.since), s: x.since }, `<small class="lat">${x.card.uid}</small><br><small>${fa(x.card.taps)} لمس${x.card.lastTap ? " · " + ago(x.card.lastTap) : ""}</small>`, { v: T(b.bal), s: b.bal }, x.limit ? `${T(x.limit)} ${meter(b.bal / x.limit, b.bal / x.limit > 0.8 ? "red" : "")}` : "بدون سقف", `<div class="row">${btn("کارت", `data-wcard="${x.id}"`, "sm")}${btn("سطح", `data-tier="${x.id}"`, "sm")}<a class="b sm" href="member.html?c=${x.id}" target="_blank">صفحه ↗</a></div>`]; })), { extra: btn("+ دعوت به حلقه", 'data-act="inv"', "gold") })}
+  ${card("اعضای اعتبار ظفر", table(["عضو", "سطح", "میزبان", "عضو از", "کارت NFC", { l: "مانده‌ی دوره" }, "سقف", ""], d.members.map((x) => { const g = guest(x.guestId), b = balance(x.id); return [`<a class="who" href="#/guests/${g.id}">${avatar(g.name, "gold")}<span><b>${esc(honorFa(g))}</b><small class="lat">${x.id}</small></span></a>`, tierPill(x.tier), esc(staff(x.host).name), { v: dateY(x.since), s: x.since }, `<small class="lat">${x.card.uid}</small><br><small>${fa(x.card.taps)} لمس${x.card.lastTap ? " · " + ago(x.card.lastTap) : ""}</small>`, { v: T(b.bal), s: b.bal }, x.limit ? `${T(x.limit)} ${meter(b.bal / x.limit, b.bal / x.limit > 0.8 ? "red" : "")}` : "بدون سقف", `<div class="row">${btn("کارت", `data-wcard="${x.id}"`, "sm")}${btn("سطح", `data-tier="${x.id}"`, "sm")}<a class="b sm" href="member.html?c=${x.id}" target="_blank">صفحه ↗</a></div>`]; })), { extra: btn("+ دعوت به اعتبار", 'data-act="inv"', "gold") })}
   ${pendingInv.length ? card("درخواست‌های معرفی", `<ul class="list">${pendingInv.map((r) => `<li><a href="#/inbox/${r.id}">${avatar(r.name)}<div><b>${esc(honorFa(r))}</b><small>معرف: ${esc(r.fields.ref || "—")} · ${ago(r.ts)}</small></div>${statusPill(r.status)}</a></li>`).join("")}</ul>`) : ""}`;
   el.onclick = (e) => {
     const w = e.target.closest("[data-wcard]"); if (w) writeCard(w.dataset.wcard);
     const t = e.target.closest("[data-tier]"); if (t) { const x = member(t.dataset.tier); modal("تغییر سطح و میزبان", `<div class="ff2">${field("سطح", `<select name="t">${opt(Object.entries(TIER), x.tier)}</select>`)}${field("میزبان", `<select name="h">${opt(hosts().map((h) => [h.id, h.name]), x.host)}</select>`)}</div>${field("سقف حساب (تومان)", `<input name="l" dir="ltr" value="${x.limit || ""}" placeholder="خالی = بدون سقف">`)}`, { onOk: (f) => { x.tier = f.t.value; x.host = f.h.value; x.limit = f.l.value ? +f.l.value : null; commit("M-1", `سطح ${guest(x.guestId).name}: ${TIER[x.tier]}`); } }); }
-    if (e.target.closest('[data-act="inv"]')) modal("دعوت به حلقه", field("مهمان", `<select name="g">${opt(d.guests.filter((g) => !g.memberId).map((g) => [g.id, `${honorFa(g)} · ${fa(g.visits)} دیدار`]))}</select>`), { ok: "ادامه", onOk: (f) => { setTimeout(() => inviteCircle(f.g.value), 320); } });
+    if (e.target.closest('[data-act="inv"]')) modal("دعوت به اعتبار", field("مهمان", `<select name="g">${opt(d.guests.filter((g) => !g.memberId).map((g) => [g.id, `${honorFa(g)} · ${fa(g.visits)} دیدار`]))}</select>`), { ok: "ادامه", onOk: (f) => { setTimeout(() => inviteCircle(f.g.value), 320); } });
   };
 }
 
@@ -226,6 +227,6 @@ export const SECTIONS = [
   { id: "tonight", g: "نمای کلی", t: "امشب · خوشامد با نام", ico: "door", r: tonight, badge: () => db().tonight.filter((a) => a.status === "expected").length },
   { id: "inbox", g: "مهمانان", t: "نامه‌ها", ico: "letter", r: inbox, badge: () => db().requests.filter((r) => r.status === "new").length },
   { id: "guests", g: "مهمانان", t: "پرونده‌ی مهمانان", ico: "people", r: guests },
-  { id: "circle", g: "مهمانان", t: "حلقه‌ی ظفر و کارت NFC", ico: "card", r: circle },
+  { id: "circle", g: "مهمانان", t: "اعتبار ظفر و کارت NFC", ico: "card", r: circle },
   { id: "occasions", g: "مهمانان", t: "مناسبت‌ها و سالروزها", ico: "cal", r: occasions, badge: () => db().occasions.filter((o) => o.call !== "done" && o.date - 7 * DAY <= Date.now() + DAY && o.date > Date.now() - DAY).length },
 ];

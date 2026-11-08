@@ -16,7 +16,7 @@ const D = {
   tapP: { fa: "صفحه‌ی خصوصی شما بدون رمز و بدون حساب کاربری باز می‌شود. برای دمو، یکی از کارت‌های زیر را لمس کنید.", tr: "Özel sayfanız şifresiz ve hesap açmadan açılır. Demo için aşağıdaki kartlardan birine dokunun.", en: "Your private page opens with no password and no account. For the demo, tap one of the cards below." },
   reading: { fa: "در حال خواندن کارت…", tr: "Kart okunuyor…", en: "Reading your card…" },
   morning: { fa: "صبح بخیر", tr: "Günaydın", en: "Good morning" }, noon: { fa: "روز بخیر", tr: "Tünaydın", en: "Good afternoon" }, evening: { fa: "عصر بخیر", tr: "İyi akşamlar", en: "Good evening" }, night: { fa: "شب بخیر", tr: "İyi akşamlar", en: "Good evening" },
-  since: { fa: "عضو حلقه از {d}", tr: "{d} tarihinden beri Circle üyesi", en: "Circle member since {d}" },
+  since: { fa: "عضو اعتبار ظفر از {d}", tr: "{d} tarihinden beri Etebar üyesi", en: "Etebar member since {d}" },
   host: { fa: "میزبان شخصی شما", tr: "Kişisel ev sahibiniz", en: "Your personal host" },
   hostP: { fa: "هر چیزی که لازم دارید، مستقیم با من در میان بگذارید.", tr: "Neye ihtiyacınız olursa, doğrudan bana söyleyin.", en: "Whatever you need, tell me directly." },
   call: { fa: "تماس", tr: "Ara", en: "Call" }, sms: { fa: "پیام", tr: "Mesaj", en: "Message" }, write: { fa: "نامه", tr: "Mektup", en: "Letter" },
@@ -172,7 +172,7 @@ function render() {
   $("#supp-add").onclick = () => openLetter("visit", {}) || null;
   $("#prefs").onsubmit = (e) => { e.preventDefault(); const f = e.target; const dd = get(); const gg = dd.guests.find((x) => x.id === g.id); Object.assign(gg.prefs, { table: f.table.value, tea: f.tea.value, allergy: f.allergy.value, guestNote: f.note.value, updated: Date.now() }); dd.audit.unshift({ ts: Date.now(), by: m.id, text: `مهمان سلیقه‌هایش را از صفحه‌ی NFC به‌روز کرد` }); save(); toast(tm("saved")); };
   $("#occ-mini").onsubmit = (e) => { e.preventDefault(); const f = e.target; const date = readDate(f, "date"); if (!date) return; const dd = get(); dd.occasions.unshift({ id: `O-${dd.occasions.length + 1}`, guestId: g.id, memberId: m.id, type: f.type.value, whose: f.whose.value, date, call: "scheduled", fromMember: true }); save(); render(); toast(tm("saved")); };
-  document.title = `${getLang() === "fa" ? "حلقه‌ی ظفر" : "Zafar Circle"} · ${latName(g)}`;
+  document.title = `${getLang() === "fa" ? "اعتبار ظفر" : "Zafar Etebar"} · ${latName(g)}`;
 }
 let tT; function toast(msg) { const el = $("#toast"); el.textContent = msg; el.classList.add("on"); clearTimeout(tT); tT = setTimeout(() => el.classList.remove("on"), 3000); }
 
